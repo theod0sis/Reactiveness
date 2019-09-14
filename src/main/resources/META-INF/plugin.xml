@@ -106,17 +106,11 @@
 
     <actions>
         <action
-                id="StackOverflow.Search.Editor"
+                id="Reactiveness.shortcut"
                 class="gr.aueb.reactiveness.actions.RxJavaAction"
-                text="Search on Stack Overflow"
-                description="Search on Stack Overflow">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
-        <action
-                id="StackOverflow.Search.Console"
-                class="gr.aueb.reactiveness.actions.RxJavaAction"
-                text="Search on Stack Overflow"
-                description="Search on Stack Overflow">
+                text="Shortcut to activate reactiveness"
+                description="transforms asynctask to rxjava2">
+            <keyboard-shortcut first-keystroke="shift ctrl alt R" keymap="$default"/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
         </action>
     </actions>

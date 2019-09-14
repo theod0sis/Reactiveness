@@ -1,139 +1,0 @@
-r.classStaticInitMerger.classCodeSizeEvaluator.classJSRInlinerAdapter.classInstructionAdapter.classTryCatchBlockSorter.classLocalVariablesSorter.classTableSwitchGenerator.classRemappingClassAdapter.classRemappingFieldAdapter.classSerialVersionUIDAdder.classTryCatchBlockSorter$1.classRemappingMethodAdapter.class"RemappingSignatureAdapter.class# RemappingAnnotationAdapter.class# SerialVersionUIDAdder$Item.class(%JSRInlinerAdapter$Instantiation.class	signaturepackage.htmlSignatureReader.classSignatureWriter.classSignatureVisitor.class
-Edge.class
-Item.class
-Type.classFrame.classLabel.classHandle.classpackage.htmlContext.classHandler.classOpcodes.classTypePath.classAttribute.classByteVector.classClassReader.classClassWriter.classFieldWriter.classClassVisitor.classFieldVisitor.classMethodWriter.classMethodVisitor.classTypeReference.classAnnotationWriter.classAnnotationVisitor.classMETA-INFMANIFEST.MForg
-eclipsepersistenceinternal	librariesasmxmlasm-xml.dtdpackage.htmlProcessor.classSAXAdapter.classSAXCodeAdapter.classSAXClassAdapter.classSAXFieldAdapter.classASMContentHandler.classProcessor$SAXWriter.classSAXAnnotationAdapter.classASMContentHandler$Rule.classProcessor$EntryElement.class!ASMContentHandler$Opcode.class"ASMContentHandler$MaxRule.class"ASMContentHandler$RuleSet.class"Processor$ZipEntryElement.class# Processor$SAXWriterFactory.class# Processor$SingleDocElement.class$!ASMContentHandler$ClassRule.class$!ASMContentHandler$FieldRule.class$!ASMContentHandler$FrameRule.class$!ASMContentHandler$LabelRule.class%"ASMContentHandler$MethodRule.class%"ASMContentHandler$SourceRule.class&#ASMContentHandler$OpcodeGroup.class&#ASMContentHandler$OpcodesRule.class&#Processor$InputSlicingHandler.class'$ASMContentHandler$LocalVarRule.class'$ASMContentHandler$TryCatchRule.class'$Processor$OutputSlicingHandler.class'$Processor$ProtectedInputStream.class(%ASMContentHandler$ExceptionRule.class(%ASMContentHandler$FrameTypeRule.class(%ASMContentHandler$InterfaceRule.class(%Processor$ContentHandlerFactory.class)&ASMContentHandler$AnnotationRule.class)&ASMContentHandler$ExceptionsRule.class)&ASMContentHandler$InnerClassRule.class)&ASMContentHandler$InterfacesRule.class)&ASMContentHandler$LineNumberRule.class)&ASMContentHandler$OuterClassRule.class*'ASMContentHandler$TableSwitchRule.class+(ASMContentHandler$LookupSwitchRule.class+(Processor$ASMContentHandlerFactory.class,)ASMContentHandler$InvokeDynamicRule.class,)Processor$SubdocumentHandlerFactory.class,)Processor$TransformerHandlerFactory.class-*ASMContentHandler$InsnAnnotationRule.class-*ASMContentHandler$TypeAnnotationRule.class-*Processor$ASMContentHandlerFactory$1.class.+ASMContentHandler$AnnotationValueRule.class.+ASMContentHandler$MethodParameterRule.class/,ASMContentHandler$TableSwitchLabelRule.class0-ASMContentHandler$AnnotationDefaultRule.class0-ASMContentHandler$LookupSwitchLabelRule.class1.ASMContentHandler$TryCatchAnnotationRule.class2/ASMContentHandler$AnnotationParameterRule.class2/ASMContentHandler$AnnotationValueEnumRule.class30ASMContentHandler$AnnotationValueArrayRule.class63ASMContentHandler$LocalVariableAnnotationRule.class85ASMContentHandler$AnnotationValueAnnotationRule.class85ASMContentHandler$InvokeDynamicBsmArgumentsRule.classtreeanalysisFrame.classValue.classpackage.htmlAnalyzer.classSmallSet.classBasicValue.classSubroutine.classInterpreter.classSourceValue.classBasicVerifier.classSimpleVerifier.classBasicInterpreter.classAnalyzerException.classSourceInterpreter.classpackage.htmlInsnList.classInsnNode.classClassNode.classFieldNode.classFrameNode.classLabelNode.classMethodNode.classIntInsnNode.classLdcInsnNode.classVarInsnNode.classIincInsnNode.classJumpInsnNode.classMethodNode$1.classTypeInsnNode.classFieldInsnNode.classParameterNode.classAnnotationNode.classInnerClassNode.classLineNumberNode.classMethodInsnNode.classAbstractInsnNode.classLocalVariableNode.classTryCatchBlockNode.classTypeAnnotationNode.classTableSwitchInsnNode.classLookupSwitchInsnNode.classInvokeDynamicInsnNode.classMultiANewArrayInsnNode.class"InsnList$InsnListIterator.class$!LocalVariableAnnotationNode.classutilpackage.htmlPrinter.classASMifier.classTextifier.classASMifiable.classTextifiable.classCheckClassAdapter.classCheckFieldAdapter.classTraceClassVisitor.classTraceFieldVisitor.classCheckMethodAdapter.classTraceMethodVisitor.classCheckMethodAdapter$1.classCheckSignatureAdapter.classTraceSignatureVisitor.classCheckAnnotationAdapter.classTraceAnnotationVisitor.classattrspackage.html
-commonsMethod.classpackage.htmlRemapper.classAdviceAdapter.classSimpleRemapper.classAnalyzerAdapter.classGeneratorAdapter.classStaticInitMerger.classCodeSizeEvaluator.classJSRInlinerAdapter.classInstructionAdapter.classTryCatchBlockSorter.classLocalVariablesSorter.classTableSwitchGenerator.classRemappingClassAdapter.classRemappingFieldAdapter.classSerialVersionUIDAdder.classTryCatchBlockSorter$1.classRemappingMethodAdapter.class"RemappingSignatureAdapter.class# RemappingAnnotationAdapter.class# SerialVersionUIDAdder$Item.class(%JSRInlinerAdapter$Instantiation.class	signaturepackage.htmlSignatureReader.classSignatureWriter.classSignatureVisitor.class
-Edge.class
-Item.class
-Type.classFrame.classLabel.classHandle.classpackage.htmlContext.classHandler.classOpcodes.classTypePath.classAttribute.classByteVector.classClassReader.classClassWriter.classFieldWriter.classClassVisitor.classFieldVisitor.classMethodWriter.classMethodVisitor.classTypeReference.classAnnotationWriter.classAnnotationVisitor.classMETA-INFECLIPSE_.SFMANIFEST.MFeclipse.infECLIPSE_.RSA
-about.htmlreadme.htmllicense.htmlorgjodatimetzdataCETEETESTEtcGMTUCTUTCGMT+1GMT+2GMT+3GMT+4GMT+5GMT+6GMT+7GMT+8GMT+9GMT-1GMT-2GMT-3GMT-4GMT-5GMT-6GMT-7GMT-8GMT-9	GMT+10	GMT+11	GMT+12	GMT-10	GMT-11	GMT-12	GMT-13	GMT-14HSTMETMSTWETAsiaAdenBakuDiliGazaHovdOmskOralAmmanAqtauChitaDhakaDubaiKabulMacauQatarSeoulTokyoTomsk	Almaty	Anadyr	Aqtobe	Atyrau	Beirut	Brunei	Hebron	Kuwait	Manila	Muscat	Riyadh	Taipei	Tehran	Urumqi	Yangon
-Baghdad
-Bahrain
-Bangkok
-Barnaul
-Bishkek
-Colombo
-Irkutsk
-Jakarta
-Karachi
-Kolkata
-Kuching
-Magadan
-Nicosia
-Tbilisi
-Thimphu
-Yakutsk
-YerevanAshgabatDamascusDushanbeIstanbulJayapuraKhandygaMakassarSakhalinShanghaiTashkentUst-Nera	Famagusta	Hong_Kong	Jerusalem	Kamchatka	Kathmandu	Pontianak	Pyongyang	Qyzylorda	Samarkand	Singapore	Vientiane
-Choibalsan
-Phnom_PenhHo_Chi_MinhKrasnoyarskNovosibirskUlaanbaatarVladivostokKuala_LumpurNovokuznetskSrednekolymskYekaterinburg	AfricaJubaLomeAccraCairoCeutaDakarLagosTunis	Asmara	Bamako	Bangui	Banjul	Bissau	Douala	Harare	Kigali	Luanda	Lusaka	Malabo	Maputo	Maseru	Niamey
-Abidjan
-Algiers
-Conakry
-Kampala
-Mbabane
-Nairobi
-TripoliBlantyreDjiboutiEl_AaiunFreetownGaboroneKhartoumKinshasaMonroviaNdjamenaSao_TomeWindhoek	Bujumbura	Mogadishu
-Casablanca
-Libreville
-Lubumbashi
-Nouakchott
-Porto-NovoAddis_AbabaBrazzavilleOuagadougouJohannesburgDar_es_Salaam	ArcticLongyearbyen	EuropeKievOsloRigaRomeKirovMaltaMinskParisSofiaVaduz	Athens	Berlin	Dublin	Jersey	Lisbon	London	Madrid	Monaco	Moscow	Prague	Samara	Skopje	Tirane	Vienna	Warsaw	Zagreb	Zurich
-Andorra
-Nicosia
-Saratov
-Tallinn
-Vatican
-VilniusBelgradeBrusselsBudapestBusingenChisinauGuernseyHelsinkiIstanbulSarajevoUzhgorod	Amsterdam	Astrakhan	Bucharest	Gibraltar	Ljubljana	Mariehamn	Podgorica	Stockholm	Ulyanovsk	Volgograd
-Bratislava
-Copenhagen
-Luxembourg
-San_Marino
-Simferopol
-ZaporozhyeIsle_of_ManKaliningrad	IndianMaheCocos	Chagos	Comoro
-Mayotte
-ReunionMaldives	Christmas	Kerguelen	MauritiusAntananarivo
-AmericaAdakLimaNomeArubaBahiaBelemBoiseSitkaThule	Belize	Bogota	Cancun	Cayman	Cuiaba	Dawson	Denver	Guyana	Havana	Inuvik	Juneau	La_Paz	Maceio	Manaus	Merida	Nassau	Panama	Recife	Regina
-Antigua
-Caracas
-Cayenne
-Chicago
-Creston
-Curacao
-Detroit
-Godthab
-Grenada
-Halifax
-IndianaKnoxVevay
-Marengo
-Winamac	Tell_City	Vincennes
-PetersburgIndianapolis
-Iqaluit
-Jamaica
-Managua
-Marigot
-Moncton
-Nipigon
-Noronha
-Ojinaga
-Phoenix
-Tijuana
-Toronto
-Tortola
-YakutatAnguillaAsuncionAtikokanBarbadosDominicaEdmontonEirunepeKentucky
-Louisville
-MonticelloMazatlanMiquelonNew_YorkResoluteSantaremSantiagoSt_JohnsSt_KittsSt_LuciaWinnipeg	Anchorage	Araguaina	ArgentinaJujuySalta
-Cordoba
-Mendoza
-Tucuman
-UshuaiaLa_RiojaSan_JuanSan_Luis	CatamarcaBuenos_AiresRio_Gallegos	Boa_Vista	Chihuahua	Fortaleza	Glace_Bay	Goose_Bay	Guatemala	Guayaquil	Matamoros	Menominee	Monterrey	Sao_Paulo	St_Thomas	Vancouver
-Costa_Rica
-Grand_Turk
-Guadeloupe
-Hermosillo
-Kralendijk
-Martinique
-Metlakatla
-Montevideo
-Montserrat
-Paramaribo
-Rio_Branco
-St_Vincent
-WhitehorseEl_SalvadorFort_NelsonLos_AngelesMexico_CityPangnirtungPorto_VelhoPuerto_RicoRainy_RiverTegucigalpaThunder_BayYellowknifeBlanc-SablonCampo_GrandeDanmarkshavnDawson_CreekNorth_Dakota	Beulah	Center	New_SalemPunta_ArenasRankin_InletScoresbysundCambridge_BayLower_PrincesPort_of_SpainSanto_DomingoSt_BarthelemySwift_CurrentBahia_BanderasPort-au-Prince
-CST6CDT
-EST5EDT
-MST7MDT
-PST8PDT
-PacificApiaFijiGuamNiueWakeChuukEfateNauruPalau	Easter	Kosrae	Majuro	Midway	Noumea	Saipan	Tahiti	Tarawa	Wallis
-Chatham
-Fakaofo
-Gambier
-Norfolk
-PohnpeiAucklandFunafutiHonoluluPitcairn	Enderbury	Galapagos	Kwajalein	Marquesas	Pago_Pago	Rarotonga	Tongatapu
-KiritimatiGuadalcanalBougainvillePort_MoresbyAtlanticFaroe	Azores	Canary
-Bermuda
-Madeira
-Stanley	Reykjavik	St_Helena
-Cape_VerdeSouth_Georgia	AustraliaEuclaPerth	Currie	Darwin	Hobart	SydneyAdelaideBrisbaneLindeman	Lord_Howe	MelbourneBroken_Hill
-AntarcticaCaseyDavisSyowaTroll	Mawson	Palmer	Vostok
-McMurdo
-Rothera	MacquarieDumontDUrvilleZoneInfoMapProvider.classUTCProvider.classNameProvider.classZoneInfoLogger.classZoneInfoCompiler.classZoneInfoLogger$1.classZoneInfoProvider.classFixedDateTimeZone.classCachedDateTimeZone.classZoneInfoProvider$1.classDateTimeZoneBuilder.classDefaultNameProvider.classZoneInfoCompiler$Rule.classZoneInfoCompiler$Zone.class CachedDateTimeZone$Info.class!DateTimeZoneBuilder$Rule.class!ZoneInfoCompiler$RuleSet.class# DateTimeZoneBuilder$OfYear.class$!DateTimeZoneBuilder$DSTZone.class$!DateTimeZoneBuilder$RuleSet.class'$DateTimeZoneBuilder$Recurrence.class'$DateTimeZoneBuilder$Transition.class(%ZoneInfoCompiler$DateTimeOfYear.class.+DateTimeZoneBuilder$PrecalculatedZone.classbaseBaseLocal.classBasePeriod.classBasePartial.classBaseDateTime.classBaseDuration.classBaseInterval.classBasePeriod$1.classAbstractPeriod.classAbstractInstant.classAbstractPartial.classAbstractDateTime.classAbstractDuration.classAbstractInterval.classBaseSingleFieldPeriod.classfieldFieldUtils.classBaseDateTimeField.classBaseDurationField.classSkipDateTimeField.classMillisDurationField.classOffsetDateTimeField.classScaledDurationField.classStrictDateTimeField.classDividedDateTimeField.classLenientDateTimeField.classPreciseDateTimeField.classPreciseDurationField.classSkipUndoDateTimeField.classDecoratedDateTimeField.classDecoratedDurationField.classDelegatedDateTimeField.classDelegatedDurationField.classImpreciseDateTimeField.classRemainderDateTimeField.classZeroIsMaxDateTimeField.class!UnsupportedDateTimeField.class!UnsupportedDurationField.class%"AbstractPartialFieldProperty.class%"PreciseDurationDateTimeField.class-*AbstractReadableInstantFieldProperty.class30ImpreciseDateTimeField$LinkedDurationField.class	chronoGJCacheKey.classGJChronology.classISOChronology.classBaseChronology.classBasicChronology.classGJLocaleSymbols.classLimitChronology.classZonedChronology.classCopticChronology.classJulianChronology.classStrictChronology.classBasicGJChronology.classIslamicChronology.classLenientChronology.classBuddhistChronology.classEthiopicChronology.classGJEraDateTimeField.classISOChronology$Stub.classAssembledChronology.classGregorianChronology.classBasicYearDateTimeField.class!BasicChronology$YearInfo.class!GJDayOfWeekDateTimeField.class!GJYearOfEraDateTimeField.class"BasicFixedMonthChronology.class"GJChronology$CutoverField.class"ISOYearOfEraDateTimeField.class# AssembledChronology$Fields.class# BasicWeekyearDateTimeField.class# GJMonthOfYearDateTimeField.class$!BasicDayOfYearDateTimeField.class$!BasicSingleEraDateTimeField.class%"BasicChronology$HalfdayField.class%"BasicDayOfMonthDateTimeField.class&#BasicMonthOfYearDateTimeField.class'$LimitChronology$LimitException.class)&BasicWeekOfWeekyearDateTimeField.class)&GJChronology$LinkedDurationField.class+(GJChronology$ImpreciseCutoverField.class+(LimitChronology$LimitDateTimeField.class+(LimitChronology$LimitDurationField.class+(ZonedChronology$ZonedDateTimeField.class+(ZonedChronology$ZonedDurationField.class.+IslamicChronology$LeapYearPatternType.class	formatFormatUtils.classPeriodFormat.classPeriodParser.classPeriodPrinter.classmessages.propertiesDateTimeFormat.classDateTimeParser.classInternalParser.classDateTimePrinter.classISOPeriodFormat.classInternalPrinter.classPeriodFormatter.classmessages_cs.propertiesmessages_da.propertiesmessages_de.propertiesmessages_en.propertiesmessages_es.propertiesmessages_fr.propertiesmessages_it.propertiesmessages_ja.propertiesmessages_nl.propertiesmessages_no.propertiesmessages_pl.propertiesmessages_pt.propertiesmessages_ru.propertiesmessages_tr.propertiesDateTimeFormatter.classISODateTimeFormat.classDateTimeParserBucket.classPeriodFormatterBuilder.class!DateTimeFormatterBuilder.class$!ISODateTimeFormat$Constants.class%"DateTimeParserInternalParser.class%"InternalParserDateTimeParser.class&#DateTimeFormat$StyleFormatter.class&#PeriodFormat$DynamicWordBased.class'$DateTimePrinterInternalPrinter.class'$InternalPrinterDateTimePrinter.class'$PeriodFormatterBuilder$Literal.class(%DateTimeParserBucket$SavedField.class(%DateTimeParserBucket$SavedState.class)&PeriodFormatterBuilder$Composite.class)&PeriodFormatterBuilder$Separator.class*'DateTimeFormatterBuilder$Fraction.class*'PeriodFormatterBuilder$RegExAffix.class+(DateTimeFormatterBuilder$Composite.class+(DateTimeFormatterBuilder$TextField.class+(PeriodFormatterBuilder$PluralAffix.class+(PeriodFormatterBuilder$SimpleAffix.class,)DateTimeFormatterBuilder$TimeZoneId.class,)PeriodFormatterBuilder$RegExAffix$1.class-*DateTimeFormatterBuilder$FixedNumber.class.+DateTimeFormat$StyleFormatterCacheKey.class.+DateTimeFormatterBuilder$PaddedNumber.class.+DateTimeFormatterBuilder$TimeZoneName.class.+DateTimeFormatterBuilder$TwoDigitYear.class.+PeriodFormatterBuilder$CompositeAffix.class.+PeriodFormatterBuilder$FieldFormatter.class.+PeriodFormatterBuilder$IgnorableAffix.class/,DateTimeFormatterBuilder$StringLiteral.class0-DateTimeFormatterBuilder$MatchingParser.class0-DateTimeFormatterBuilder$TimeZoneOffset.class0-DateTimeFormatterBuilder$UnpaddedNumber.class0-PeriodFormatterBuilder$PeriodFieldAffix.class1.DateTimeFormatterBuilder$NumberFormatter.class2/DateTimeFormatterBuilder$CharacterLiteral.class
-convertConverter.classConverterSet.classDateConverter.classLongConverter.classNullConverter.classPeriodConverter.classStringConverter.classConverterManager.classInstantConverter.classPartialConverter.classAbstractConverter.classCalendarConverter.classDurationConverter.classIntervalConverter.classConverterSet$Entry.class ReadablePeriodConverter.class!ReadableInstantConverter.class!ReadablePartialConverter.class"ReadableDurationConverter.class"ReadableIntervalConverter.class
-Days.classHours.classWeeks.classYears.classMonths.classPeriod.classInstant.classMinutes.classPartial.classSeconds.classDateTime.classDuration.classInterval.classMonthDay.classLocalDate.classLocalTime.classTimeOfDay.classYearMonth.classChronology.classPeriodType.classDateMidnight.classDateTimeZone.classYearMonthDay.classDateTimeField.classDateTimeUtils.classDurationField.classLocalDateTime.classMutablePeriod.classReadablePeriod.classMutableDateTime.classMutableInterval.classReadableInstant.classReadablePartial.classUTCDateTimeZone.classPartial$Property.classReadableDateTime.classReadableDuration.classReadableInterval.classDateTime$Property.classDateTimeConstants.classDateTimeFieldType.classDateTimeZone$Stub.classDurationFieldType.classMonthDay$Property.classDateTimeComparator.classJodaTimePermission.classLocalDate$Property.classLocalTime$Property.classReadWritablePeriod.classTimeOfDay$Property.classYearMonth$Property.classReadWritableInstant.classReadWritableDateTime.classReadWritableInterval.classDateMidnight$Property.classDateTimeZone$LazyInit.classYearMonthDay$Property.classLocalDateTime$Property.class DateTimeZone$LazyInit$1.class IllegalInstantException.class!MutableDateTime$Property.class# IllegalFieldValueException.class%"DateTimeUtils$MillisProvider.class*'DateTimeUtils$FixedMillisProvider.class+(DateTimeUtils$OffsetMillisProvider.class+(DateTimeUtils$SystemMillisProvider.class41DateTimeFieldType$StandardDateTimeFieldType.class41DurationFieldType$StandardDurationFieldType.classMETA-INFmaven	joda-time	joda-time
-pom.xmlpom.properties
-NOTICE.txtLICENSE.txtMANIFEST.MF
-schemasxhtml-mobileproperties.dtdxhtml-mobile10.dtdstandardSchemasxhtml-mobile12.dtdxhtmlmp12-form-1.modtestng-1.0.dtdxhtml-mobile10-flat.dtd
-schemasxhtml-mobile12-form.modmaven-4.0.0.xsdxhtml-mobile10-model-1.modprofiles-1.0.0.xsdxhtml-mobile12-model-1.modsettings-1.0.0.xsdmml3	resourcesdoc-style.xhtmlxslt-schema.xsdMakefiledocumentation.xml	patch-vnudocumentation.xslmathml3.rnc	resourcesmathml3-inc.rncmathml3-common.rnc
-patchesmathml3-content.rncmeta-ext.rncmathml3-presentation.rncembed-ext.rncmathml3-strict-content.rnccommon-ext.rncstandardSchemas0004_ping.patchhtml50001_html5.patch
-xhtml5.xsd0002_xhtml5.patch
-xml.xsd0007_legacy.patch	xhtml.dtdpatch_build.patch	xlink.dtdcore-scripting-ext.rnc
-xhtml1.dtd0005_html5_namespace.patchcatalog.xsd0006_xhtml5_namespace.patchxinclude.xsdrelaxng.rngxslt-1_0.xsdhtml5-schemaxslt-2_0.xsdrdfXMLSchema-1_1
-rdf.rncXMLSchema.xsd$!XMLSchema-hasFacetAndProperty.xsdits2XMLSchema.dtdits20-html5.rncits20-html5-types.rncXMLSchema.xsdhtml5datatypes.dtdaria.rncxhtml-lat1.entdata.rncxhtml-symbol.entmeta.rncxhtml-special.entrdfa.rncxhtml1-strict.dtdruby.rncxhtml1-strict.xsd	block.rncxhtml1-frameset.dtd	embed.rncxhtml1-frameset.xsd	html5.rncplugin-repository.dtd	media.rncXMLSchema-instance.xsd
-common.rncxhtml1-transitional.dtd
-legacy.rncxhtml1-transitional.xsd
-phrase.rncXMLSchema-versioning.xsd
-tables.rnc
-xhtml11
-xhtml5.rncxhtml11.dtdmeta-ext.rncxhtml-lat1.entrevision.rncxhtml-base-1.modembed-ext.rncxhtml-edit-1.modhtml5core.rncxhtml-form-1.modhtml5full.rncxhtml-link-1.modmicrodata.rncxhtml-list-1.modsectional.rncxhtml-meta-1.modweb-forms.rncxhtml-pres-1.modcommon-ext.rncxhtml-ruby-1.modstructural.rncxhtml-symbol.entweb-forms2.rncxhtml-text-1.modxhtml5core.rncxhtml-image-1.modits20-html5.rncxhtml-param-1.modapplications.rncxhtml-qname-1.modcore-scripting.rncxhtml-special.entform-datatypes.rncxhtml-style-1.modhtml5full-rdfa.rncweb-components.rncxhtml-table-1.modhtml5exclusions.rncxhtml-events-1.modxhtml-object-1.modxhtml5full-html.rncsvg11xhtml5full-xhtml.rncxhtml-script-1.mod	svg11.rncits20-html5-types.rncxhtml-struct-1.modinkscape.rncxhtml-target-1.modcore-scripting-ext.rncsvg-clip.rnchtml5full-rdfalite.rncxhtml-attribs-1.modsvg-font.rncxhtml-blkpres-1.modweb-forms-scripting.rncsvg-mask.rncweb-forms2-scripting.rncxhtml-charent-1.modsvg-text.rncxhtml-csismap-1.modsvg-view.rncxhtml5full-xhtml-rdfa.rncxhtml-inlpres-1.modhtml5full-no-microdata.rncsvg-image.rncxhtml-ssismap-1.modsvg-qname.rncxhtml5full-html-rdfalite.rncxhtml11-model-1.modsvg-shape.rnc xhtml5full-xhtml-rdfalite.rncxhtml-blkphras-1.mod!xhtml5core-plus-web-forms2.rncsvg-style.rncxhtml-inlphras-1.mod# xhtml5full-html-no-microdata.rncsvg11-inc.rncxhtml-inlstyle-1.modsvg-cursor.rnc$!xhtml5full-xhtml-no-microdata.rncxhtml-blkstruct-1.modsvg-filter.rncxhtml-datatypes-1.mod
-LICENSEsvg-marker.rncxhtml-framework-1.mod	html5.rncsvg-script.rncxhtml-hypertext-1.mod
-xhtml5.rncsvg11-tiny.rncxhtml-inlstruct-1.modhtml5-all.rncsvg-pattern.rncxhtml-basic-form-1.modhtml5-its.rncsvg-profile.rncxhtml-basic-table-1.modhtml5chars.entsvg11-basic.rncxhtml5-all.rncsvg-gradient.rnchtml5-rdfalite.rncsvg-animation.rncxhtml5-rdfalite.rncsvg-datatypes.rnchtml5-svg-mathml.rncsvg-hyperlink.rncxhtml5-svg-mathml.rncsvg-structure.rnchtml5-no-microdata.rncinkscape-draft.rnchtml5-rdfalite-w3c.rncsvg-basic-clip.rncxhtml5-no-microdata.rncsvg-basic-font.rncxhtml5-rdfalite-w3c.rncsvg-basic-text.rncsvg11-tiny-inc.rncsvg-xhtml5-rdf-mathml.rnc!xhtml1-ruby-rdf-svg-mathml.rncsvg-conditional.rncsvg-core-attrib.rnchtml5charref.rbupdate_html5_schema.shsvg11-basic-inc.rncsvg-basic-filter.rncsvg-paint-attrib.rncsvg-xlink-attrib.rncsvg-extensibility.rncsvg-opacity-attrib.rncsvg-basic-structure.rncsvg-graphics-attrib.rncsvg-viewport-attrib.rncsvg-container-attrib.rncsvg-docevents-attrib.rncsvg-animevents-attrib.rncsvg-graphevents-attrib.rncsvg-extresources-attrib.rnc svg-basic-graphics-attrib.rnc
