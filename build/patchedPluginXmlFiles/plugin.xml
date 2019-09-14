@@ -1,0 +1,19 @@
+<idea-plugin url="https://www.jetbrains.com/idea">
+  <name>VssIntegration</name>
+  <id>com.jetbrains.vssintegration</id>
+  <version>1.0-SNAPSHOT</version>
+  <vendor url="https://www.jetbrains.com" email="support@jetbrains.com">A Company Inc.</vendor>
+  <depends>com.intellij.modules.platform</depends>
+  <idea-version since-build="192.5728" until-build="192.*"/>
+  <application-components/>
+  <module-components/>
+  <actions>
+    <action id="StackOverflow.Search.Editor" class="HelloAction" text="Search on Stack Overflow" description="Search on Stack Overflow">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action id="StackOverflow.Search.Console" class="HelloAction" text="Search on Stack Overflow" description="Search on Stack Overflow">
+      <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+  <extensionPoints/>
+</idea-plugin>

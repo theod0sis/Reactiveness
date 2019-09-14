@@ -1,0 +1,32 @@
+<application>
+  <component name="RecentProjectsManager">
+    <option name="recentPaths">
+      <list>
+        <option value="C:/bea102_user_projects/MSc-vacpro" />
+      </list>
+    </option>
+    <option name="openPaths">
+      <list>
+        <option value="C:/bea102_user_projects/MSc-vacpro" />
+      </list>
+    </option>
+    <option name="lastPath" value="C:/bea102_user_projects/MSc-vacpro" />
+    <option name="pid" value="" />
+    <option name="additionalInfo">
+      <map>
+        <entry key="C:/bea102_user_projects/MSc-vacpro">
+          <value>
+            <RecentProjectMetaInfo>
+              <option name="build" value="IC-192.5728.12" />
+              <option name="productionCode" value="IC" />
+              <option name="eap" value="true" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="projectOpenTimestamp" value="1563527594878" />
+              <option name="buildTimestamp" value="1562726826511" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</application>
