@@ -1,2 +1,2 @@
 # Reactiveness
-MSc IN INFORMATION SYSTEMS Diploma thesis
+MSc IN INFORMATION SYSTEMS Master thesis
