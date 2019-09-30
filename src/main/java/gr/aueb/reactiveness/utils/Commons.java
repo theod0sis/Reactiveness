@@ -1,4 +1,4 @@
-package gr.aueb.reactiveness.Utils;
+package gr.aueb.reactiveness.utils;
 
 /**
  * @author taggelis
