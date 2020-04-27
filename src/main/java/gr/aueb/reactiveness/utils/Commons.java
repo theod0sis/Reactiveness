@@ -9,4 +9,5 @@ public final class Commons {
     }
 
     public static final String ASYNCTASK = "AsyncTask";
+    public static final String DO_IN_BACKGROUND = "doInBackground";
 }

@@ -1,7 +1,11 @@
 package gr.aueb.reactiveness.utils;
 
 
-import javax.annotation.Nullable;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiReferenceList;
+
+import java.util.Objects;
 
 /**
  * The type Reactiveness utils.
@@ -14,14 +18,14 @@ public final class ReactivenessUtils {
     }
 
 
-    /**
-     * Gets super class name.
-     *
-     * @param javaClass the java class
-     * @return the super class name
-     */
-    public static String getSuperClassName(@Nullable Class javaClass) {
-        return javaClass != null ? javaClass.getSuperclass().getName() : null;
+    public static boolean findIfExtendsAsyncTask(final PsiClass psiClass){
+        PsiReferenceList extendsList = psiClass.getExtendsList();
+        for (PsiClassType referencedType : Objects.requireNonNull(extendsList).getReferencedTypes()) {
+            if (Commons.ASYNCTASK.equals(referencedType.getClassName())) {
+               return true;
+            }
+        }
+        return false;
     }
 
 }
