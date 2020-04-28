@@ -6,8 +6,9 @@ import com.intellij.codeInsight.generation.PsiGenerationInfo;
 import com.intellij.codeInsight.intention.AddAnnotationPsiFix;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiCodeBlock;
+import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElementFactory;
+import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiImportList;
@@ -15,7 +16,12 @@ import com.intellij.psi.PsiImportStatementBase;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.impl.source.PsiMethodImpl;
+import com.intellij.psi.impl.source.tree.java.PsiDeclarationStatementImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
@@ -58,23 +64,30 @@ public class AsyncTaskRefactor {
                     extractMethods(keySet, innerAsync.get(keySet));
 
                     ReferencesSearch.search(innerAsync.get(keySet)).forEach(reference -> {
-
+                        //reference is finding the declaration two times so we will keep only the new Expression
+                        if (reference.getElement().getParent() instanceof PsiTypeElement) {
+                            reference.getElement().delete();
+                            return;
+                        }
                         List<PsiMethodImpl> methodList = PsiTreeUtil
                             .collectParents(reference.getElement(), PsiMethodImpl.class, false,
                                 e -> e instanceof PsiClass);
+
                         methodList.forEach(psiMethod -> {
-                            PsiCodeBlock codeBlock = psiMethod.getBody();
-                            codeBlock.getStatements();
-                            //if(onProgressUpdateExist){
-                            //}
+                            if (onProgressUpdateExist) {
+                                initializeBehaviorSubject(psiMethod, factory);
+                            }
                         });
                     });
                     //final delete the asyncTask inner class
                     innerAsync.get(keySet).delete();
+                    CodeStyleManager.getInstance(keySet.getProject()).reformat(keySet);
+                    JavaCodeStyleManager.getInstance(keySet.getProject()).optimizeImports(keySet.getContainingFile());
                 }
             }.execute();
         }
     }
+
 
     private void addImport(PsiElementFactory elementFactory, String fullyQualifiedName, PsiClass psiClass) {
         final PsiFile file = psiClass.getContainingFile();
@@ -137,5 +150,21 @@ public class AsyncTaskRefactor {
                 .insertMembersAtOffset(psiParentClass, psiParentClass.getTextOffset(),
                     Collections.<GenerationInfo>singletonList(new PsiGenerationInfo<>(psiMethod)));
         }
+    }
+
+    private void initializeBehaviorSubject(final PsiMethodImpl psiMethod, final PsiElementFactory factory) {
+        PsiType behaviorType = factory.createTypeFromText("BehaviorSubject<String>", psiMethod);
+        PsiExpression initValue = factory.createExpressionFromText("BehaviorSubject.create()", psiMethod);
+        PsiDeclarationStatement progressSubject =
+            factory.createVariableDeclarationStatement("progressSubject", behaviorType, initValue);
+        PsiDeclarationStatementImpl psiDeclarationStatement = (PsiDeclarationStatementImpl) psiMethod.getBody()
+            .getStatements()[0].addAfter(progressSubject, psiMethod.getBody().getStatements()[0].getLastChild());
+        PsiType disposable = factory.createTypeFromText("Disposable", psiMethod);
+        PsiExpression disposableInitValue = factory.createExpressionFromText("myTimelineProgressSubject"
+            + ".observeOn(AndroidSchedulers.mainThread())"
+            + ".subscribe(s -> rxProgressUpdate(s))", psiMethod);
+        PsiDeclarationStatement declarationStatement = factory
+            .createVariableDeclarationStatement("disposal", disposable, disposableInitValue);
+        psiDeclarationStatement.addAfter(declarationStatement, declarationStatement.getLastChild());
     }
 }
