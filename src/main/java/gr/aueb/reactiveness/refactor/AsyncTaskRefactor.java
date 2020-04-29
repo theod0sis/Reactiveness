@@ -1,5 +1,6 @@
 package gr.aueb.reactiveness.refactor;
 
+import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.codeInsight.generation.GenerateMembersUtil;
 import com.intellij.codeInsight.generation.GenerationInfo;
 import com.intellij.codeInsight.generation.PsiGenerationInfo;
@@ -11,14 +12,16 @@ import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiIfStatement;
 import com.intellij.psi.PsiImportList;
 import com.intellij.psi.PsiImportStatementBase;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
-import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.impl.source.PsiMethodImpl;
 import com.intellij.psi.impl.source.tree.java.PsiDeclarationStatementImpl;
@@ -31,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The type Async task refactor.
@@ -54,12 +58,12 @@ public class AsyncTaskRefactor {
                 protected void run() throws Throwable {
                     // 0. Create CompositeDisposable to handle subscriptions
                     createCompositeDisposable(factory, keySet);
-                    // 1.Move AsyncTask fields to Activity and rename them
-                    // Precondition: Single async-task instance active
-                    moveAsyncTaskFieldsToParentClass(keySet, innerAsync.get(keySet));
                     // Search if onProgressUpdate exist
                     boolean onProgressUpdateExist = Arrays.stream(innerAsync.get(keySet).getAllMethods())
                         .anyMatch(psiMethod -> psiMethod.getName().equals("onProgressUpdate"));
+                    // 1.Move AsyncTask fields to Activity and rename them
+                    // Precondition: Single async-task instance active
+                    moveAsyncTaskFieldsToParentClass(keySet, innerAsync.get(keySet));
                     // 2. Extract asyncTask implementation to enclosing activity
                     extractMethods(keySet, innerAsync.get(keySet));
 
@@ -76,12 +80,14 @@ public class AsyncTaskRefactor {
                         methodList.forEach(psiMethod -> {
                             if (onProgressUpdateExist) {
                                 initializeBehaviorSubject(psiMethod, factory);
+                                changeDoInBackgroundOnProgressUpdate(keySet, factory);
                             }
                         });
                     });
+                    generateOrUpdateOnDestroy(keySet, factory);
                     //final delete the asyncTask inner class
                     innerAsync.get(keySet).delete();
-                    CodeStyleManager.getInstance(keySet.getProject()).reformat(keySet);
+                    new ReformatCodeProcessor(keySet.getContainingFile(), false).run();
                     JavaCodeStyleManager.getInstance(keySet.getProject()).optimizeImports(keySet.getContainingFile());
                 }
             }.execute();
@@ -159,12 +165,56 @@ public class AsyncTaskRefactor {
             factory.createVariableDeclarationStatement("progressSubject", behaviorType, initValue);
         PsiDeclarationStatementImpl psiDeclarationStatement = (PsiDeclarationStatementImpl) psiMethod.getBody()
             .getStatements()[0].addAfter(progressSubject, psiMethod.getBody().getStatements()[0].getLastChild());
+
         PsiType disposable = factory.createTypeFromText("Disposable", psiMethod);
-        PsiExpression disposableInitValue = factory.createExpressionFromText("myTimelineProgressSubject"
-            + ".observeOn(AndroidSchedulers.mainThread())"
-            + ".subscribe(s -> rxProgressUpdate(s))", psiMethod);
+        PsiExpression disposableInitValue = factory.createExpressionFromText("progressSubject"
+            + "\n.observeOn(AndroidSchedulers.mainThread())"
+            + "\n.subscribe(s -> rxProgressUpdate(s))", psiMethod);
         PsiDeclarationStatement declarationStatement = factory
             .createVariableDeclarationStatement("disposal", disposable, disposableInitValue);
-        psiDeclarationStatement.addAfter(declarationStatement, declarationStatement.getLastChild());
+        PsiDeclarationStatementImpl psiDec = (PsiDeclarationStatementImpl) psiDeclarationStatement
+            .addAfter(declarationStatement, declarationStatement.getLastChild());
+
+        PsiStatement statement =  factory
+            .createStatementFromText("compositeDisposable.add(disposal);", psiMethod);
+
+        psiDec.addAfter(statement, statement.getLastChild());
+    }
+
+    private void generateOrUpdateOnDestroy(PsiClass psiClass, final PsiElementFactory factory) {
+        Optional<PsiMethod> doInBackground = Arrays.stream(psiClass.getMethods())
+            .filter(psiMethod -> psiMethod.getName().equals("onDestroy"))
+            .findFirst();
+
+        // method onDestroy exist then update it with disposable.dispose() else create it(only for Activities).
+        if (doInBackground.isPresent()) {
+            PsiIfStatement ifStatement = (PsiIfStatement) factory
+                .createStatementFromText("if(a){\ncompositeDisposable.dispose();\n}", null);
+
+            PsiExpression condition = ifStatement.getCondition();
+            PsiExpression expr = factory
+                .createExpressionFromText("compositeDisposable != null && !compositeDisposable.isDisposed()",
+                    doInBackground.get());
+            if (condition != null) {
+                condition.replace(expr);
+            }
+            doInBackground.get().addBefore(ifStatement,doInBackground.get().getBody().getLastBodyElement());
+        } else {
+
+        }
+    }
+
+    private void changeDoInBackgroundOnProgressUpdate(PsiClass psiClass, final PsiElementFactory factory) {
+
+        Optional<PsiMethod> doInBackground = Arrays.stream(psiClass.getMethods())
+            .filter(psiMethod -> psiMethod.getName().equals("rxDoInBackground"))
+            .findFirst();
+
+        if (doInBackground.isPresent()) {
+            PsiParameter publishProgressParam = factory
+                .createParameterFromText("Observer<String> publishProgress", doInBackground.get());
+            doInBackground.get().getParameterList().add(publishProgressParam);
+            doInBackground.get().getBody();
+        }
     }
 }
