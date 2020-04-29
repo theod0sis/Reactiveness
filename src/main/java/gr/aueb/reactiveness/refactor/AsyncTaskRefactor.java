@@ -8,6 +8,7 @@ import com.intellij.codeInsight.intention.AddAnnotationPsiFix;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDeclarationStatement;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiField;
@@ -25,6 +26,7 @@ import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.impl.source.PsiMethodImpl;
 import com.intellij.psi.impl.source.tree.java.PsiDeclarationStatementImpl;
+import com.intellij.psi.impl.source.tree.java.PsiKeywordImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
@@ -175,7 +177,7 @@ public class AsyncTaskRefactor {
         PsiDeclarationStatementImpl psiDec = (PsiDeclarationStatementImpl) psiDeclarationStatement
             .addAfter(declarationStatement, declarationStatement.getLastChild());
 
-        PsiStatement statement =  factory
+        PsiStatement statement = factory
             .createStatementFromText("compositeDisposable.add(disposal);", psiMethod);
 
         psiDec.addAfter(statement, statement.getLastChild());
@@ -185,7 +187,6 @@ public class AsyncTaskRefactor {
         Optional<PsiMethod> doInBackground = Arrays.stream(psiClass.getMethods())
             .filter(psiMethod -> psiMethod.getName().equals("onDestroy"))
             .findFirst();
-
         // method onDestroy exist then update it with disposable.dispose() else create it(only for Activities).
         if (doInBackground.isPresent()) {
             PsiIfStatement ifStatement = (PsiIfStatement) factory
@@ -198,9 +199,27 @@ public class AsyncTaskRefactor {
             if (condition != null) {
                 condition.replace(expr);
             }
-            doInBackground.get().addBefore(ifStatement,doInBackground.get().getBody().getLastBodyElement());
+            doInBackground.get().addBefore(ifStatement, doInBackground.get().getBody().getLastBodyElement());
         } else {
+            PsiType voidKey = factory.createTypeFromText(PsiKeywordImpl.VOID, psiClass);
+            PsiMethod onDestroyMethod = factory.createMethod("onDestroy", voidKey);
+            onDestroyMethod.getModifierList().addAnnotation("Override");
 
+            PsiStatement superStatement = factory.createStatementFromText("super.onDestroy();", onDestroyMethod);
+            PsiIfStatement ifStatement = (PsiIfStatement) factory
+                .createStatementFromText("if(a){\ncompositeDisposable.dispose();\n}", null);
+
+            PsiExpression condition = ifStatement.getCondition();
+            PsiExpression expr = factory
+                .createExpressionFromText("compositeDisposable != null && !compositeDisposable.isDisposed()",
+                    onDestroyMethod);
+            if (condition != null) {
+                condition.replace(expr);
+            }
+            PsiUtil.setModifierProperty(onDestroyMethod, PsiModifier.PROTECTED, true);
+            PsiElement superElement = onDestroyMethod.getBody().add(superStatement);
+            onDestroyMethod.getBody().addAfter(ifStatement,superElement);
+            psiClass.add(onDestroyMethod);
         }
     }
 

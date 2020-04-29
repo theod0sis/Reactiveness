@@ -38,4 +38,8 @@ public final class ReactivenessUtils {
         return backgroundMethod.isPresent();
     }
 
+    //public static boolean findIfExtendsActivity(final PsiClass javaFileClass){
+    //
+    //}
+
 }
