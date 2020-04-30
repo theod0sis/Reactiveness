@@ -12,15 +12,19 @@ import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiIfStatement;
 import com.intellij.psi.PsiImportList;
 import com.intellij.psi.PsiImportStatementBase;
 import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.PsiLocalVariable;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
@@ -33,6 +37,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import gr.aueb.reactiveness.utils.ReactivenessUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * The type Async task refactor.
@@ -64,42 +70,33 @@ public class AsyncTaskRefactor {
                 protected void run() throws Throwable {
                     // 0. Create CompositeDisposable to handle subscriptions
                     createCompositeDisposable(factory, keySet);
-                    // Search if onProgressUpdate exist
+                    // Search if onProgressUpdate and onPreExecute exist
                     boolean onProgressUpdateExist = Arrays.stream(innerAsync.get(keySet).getAllMethods())
                         .anyMatch(psiMethod -> psiMethod.getName().equals("onProgressUpdate"));
+                    boolean onPreExecuteExist = Arrays.stream(innerAsync.get(keySet).getAllMethods())
+                        .anyMatch(psiMethod -> psiMethod.getName().equals("onPreExecute"));
                     // 1.Move AsyncTask fields to Activity and rename them
                     // Precondition: Single async-task instance active
                     moveAsyncTaskFieldsToParentClass(keySet, innerAsync.get(keySet));
                     // 2. Extract asyncTask implementation to enclosing activity
                     extractMethods(keySet, innerAsync.get(keySet));
 
-                    ReferencesSearch.search(innerAsync.get(keySet)).forEach(reference -> {
-                        //reference is finding the declaration two times so we will keep only the new Expression
-                        if (reference.getElement().getParent() instanceof PsiTypeElement) {
-                            reference.getElement().delete();
-                            return;
-                        }
-                        List<PsiMethodImpl> methodList = PsiTreeUtil
-                            .collectParents(reference.getElement(), PsiMethodImpl.class, false,
-                                e -> e instanceof PsiClass);
+                    changeAsyncTaskExecuteToRx(onProgressUpdateExist, onPreExecuteExist, innerAsync.get(keySet),
+                        factory);
 
-                        methodList.forEach(psiMethod -> {
-                            if (onProgressUpdateExist) {
-                                initializeBehaviorSubject(psiMethod, factory);
-                                changeDoInBackgroundOnProgressUpdate(keySet, factory);
-                            }
-                        });
-                    });
                     generateOrUpdateOnDestroy(keySet, factory);
                     //final delete the asyncTask inner class
                     innerAsync.get(keySet).delete();
+                    // change do in background emmit events on BehaviorSubject
+                    if (onProgressUpdateExist) {
+                        changeDoInBackgroundOnProgressUpdate(keySet, factory);
+                    }
                     new ReformatCodeProcessor(keySet.getContainingFile(), false).run();
                     JavaCodeStyleManager.getInstance(keySet.getProject()).optimizeImports(keySet.getContainingFile());
                 }
             }.execute();
         }
     }
-
 
     private void addImport(PsiElementFactory elementFactory, String fullyQualifiedName, PsiClass psiClass) {
         final PsiFile file = psiClass.getContainingFile();
@@ -222,7 +219,7 @@ public class AsyncTaskRefactor {
             }
             PsiUtil.setModifierProperty(onDestroyMethod, PsiModifier.PROTECTED, true);
             PsiElement superElement = onDestroyMethod.getBody().add(superStatement);
-            onDestroyMethod.getBody().addAfter(ifStatement,superElement);
+            onDestroyMethod.getBody().addAfter(ifStatement, superElement);
             psiClass.add(onDestroyMethod);
         }
     }
@@ -240,15 +237,101 @@ public class AsyncTaskRefactor {
             final List<PsiReferenceExpression> expr = new ArrayList<>();
             doInBackground.get().accept(new JavaRecursiveElementWalkingVisitor() {
                 @Override
-                public void visitReferenceExpression (PsiReferenceExpression referenceExpression) {
+                public void visitReferenceExpression(PsiReferenceExpression referenceExpression) {
                     super.visitReferenceExpression(referenceExpression);
                     if ("publishProgress".equals(referenceExpression.getText())) {
                         expr.add(referenceExpression);
                     }
                 }
             });
-            PsiExpression expression = factory.createExpressionFromText("publishProgress.onNext",doInBackground.get());
-            expr.forEach(ex->ex.replace(expression));
+            PsiExpression expression = factory.createExpressionFromText("publishProgress.onNext", doInBackground.get());
+            expr.forEach(ex -> ex.replace(expression));
         }
+    }
+
+    private void changeAsyncTaskExecuteToRx(final boolean onProgressUpdateExist, final boolean onPreExecuteExist,
+                                            final PsiClass innerAsync, final PsiElementFactory factory) {
+        List<PsiReference> executeReference = new ArrayList<>();
+        List<PsiLocalVariable> localVariables = new ArrayList<>();
+        List<PsiMethodCallExpression> executeDirectCalls = new ArrayList<>();
+        ReferencesSearch.search(innerAsync).forEach(reference -> {
+            //reference is finding the declaration two times so we will keep only the new Expression
+            if (reference.getElement().getParent() instanceof PsiTypeElement) {
+                return;
+            }
+            if (reference.getElement().getParent().getParent() instanceof PsiLocalVariable) {
+                ReferencesSearch.search(reference.getElement().getParent().getParent())
+                    .forEach((Consumer<PsiReference>) executeReference::add);
+                localVariables.add((PsiLocalVariable) reference.getElement().getParent().getParent());
+            } else if (reference.getElement().getParent().getParent().getParent() instanceof PsiMethodCallExpression) {
+                executeDirectCalls.add(
+                    (PsiMethodCallExpression) reference.getElement().getParent().getParent().getParent());
+            }
+            // collect all parent methods of the reference
+            List<PsiMethodImpl> methodList = PsiTreeUtil
+                .collectParents(reference.getElement(), PsiMethodImpl.class, false,
+                    e -> e instanceof PsiClass);
+
+            methodList.forEach(psiMethod -> {
+                if (onProgressUpdateExist) {
+                    initializeBehaviorSubject(psiMethod, factory);
+                }
+            });
+        });
+
+        executeReference.forEach(executeCalls -> {
+            PsiMethodCallExpression methodCallExpression = (PsiMethodCallExpression) PsiTreeUtil
+                .findFirstParent(executeCalls.getElement(), false, e -> e instanceof PsiMethodCallExpression);
+            List<PsiMethodImpl> methods = PsiTreeUtil
+                .collectParents(executeCalls.getElement(), PsiMethodImpl.class, false,
+                    e -> e instanceof PsiClass);
+            if (onPreExecuteExist) {
+                addOnPreExecute(factory, executeCalls, methods.get(0));
+            }
+            generateRxCode(factory, methodCallExpression, methods.get(0));
+        });
+        localVariables.forEach(PsiLocalVariable::delete);
+
+        // For new AsyncTask().execute()
+        executeDirectCalls.forEach(directCalls -> {
+            List<PsiMethodImpl> methods = PsiTreeUtil
+                .collectParents(directCalls, PsiMethodImpl.class, false,
+                    e -> e instanceof PsiClass);
+            if (onPreExecuteExist) {
+                addOnPreExecute(factory, directCalls.getReference(), methods.get(0));
+            }
+            generateRxCode(factory, directCalls, methods.get(0));
+        });
+    }
+
+    private void generateRxCode(final PsiElementFactory factory, final PsiMethodCallExpression directCalls,
+                                final PsiMethodImpl method) {
+        PsiExpression[] arguments = directCalls.getArgumentList().getExpressions();
+        final String[] s = {""};
+        Arrays.stream(arguments).forEach(arg -> s[0] = s[0] + arg.getText() + ',');
+
+        PsiStatement rxStatement = rxStatements(factory, method, s);
+
+        PsiElement rxReplaceElement = directCalls.getParent().replace(rxStatement);
+        PsiStatement statement = factory
+            .createStatementFromText("compositeDisposable.add(d2);", method);
+        method.addAfter(statement, rxReplaceElement);
+    }
+
+    @NotNull private PsiStatement rxStatements(final PsiElementFactory factory, final PsiMethodImpl method,
+                                               final String[] s) {
+        return factory.createStatementFromText(
+            "Disposable d2 = Single.fromCallable(() -> doInBackground(" + (s[0] + " progressSubject") + "))\n"
+                + ".subscribeOn(Schedulers.io())\n" + ".observeOn(AndroidSchedulers.mainThread())\n"
+                + ".subscribe(s -> rxOnPostExecute(s));", method);
+    }
+
+    private void addOnPreExecute(final PsiElementFactory factory, final PsiReference executeCalls,
+                                 final PsiMethodImpl method) {
+        PsiStatement onPreExecuteStatement = factory
+            .createStatementFromText("rxOnPreExecute();\n", method);
+        PsiElement parent = PsiTreeUtil
+            .findFirstParent(executeCalls.getElement(), false, e -> e instanceof PsiExpressionStatement);
+        method.addBefore(onPreExecuteStatement, parent);
     }
 }
