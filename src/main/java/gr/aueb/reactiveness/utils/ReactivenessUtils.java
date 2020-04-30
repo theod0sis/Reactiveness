@@ -21,11 +21,11 @@ public final class ReactivenessUtils {
     }
 
 
-    public static boolean findIfExtendsAsyncTask(final PsiClass psiClass){
+    public static boolean findIfExtendsAsyncTask(final PsiClass psiClass) {
         PsiReferenceList extendsList = psiClass.getExtendsList();
         for (PsiClassType referencedType : Objects.requireNonNull(extendsList).getReferencedTypes()) {
             if (Commons.ASYNCTASK.equals(referencedType.getClassName())) {
-               return true;
+                return true;
             }
         }
         return false;
@@ -38,8 +38,11 @@ public final class ReactivenessUtils {
         return backgroundMethod.isPresent();
     }
 
-    //public static boolean findIfExtendsActivity(final PsiClass javaFileClass){
-    //
-    //}
+    public static boolean findIfExtendsActivity(final PsiClass javaFileClass) {
+        if (javaFileClass.getExtendsList() == null || javaFileClass.getExtendsList().getReferencedTypes().length == 0) {
+            return false;
+        }
+        return javaFileClass.getExtendsList().getReferencedTypes()[0].getClassName().contains(Commons.ACTIVITY_CLASS);
+    }
 
 }

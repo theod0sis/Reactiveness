@@ -6,6 +6,7 @@ import com.intellij.codeInsight.generation.GenerationInfo;
 import com.intellij.codeInsight.generation.PsiGenerationInfo;
 import com.intellij.codeInsight.intention.AddAnnotationPsiFix;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.psi.JavaRecursiveElementWalkingVisitor;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
@@ -20,6 +21,7 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
@@ -30,7 +32,9 @@ import com.intellij.psi.impl.source.tree.java.PsiKeywordImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import gr.aueb.reactiveness.utils.ReactivenessUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -200,7 +204,7 @@ public class AsyncTaskRefactor {
                 condition.replace(expr);
             }
             doInBackground.get().addBefore(ifStatement, doInBackground.get().getBody().getLastBodyElement());
-        } else {
+        } else if (ReactivenessUtils.findIfExtendsActivity(psiClass)) {
             PsiType voidKey = factory.createTypeFromText(PsiKeywordImpl.VOID, psiClass);
             PsiMethod onDestroyMethod = factory.createMethod("onDestroy", voidKey);
             onDestroyMethod.getModifierList().addAnnotation("Override");
@@ -233,7 +237,18 @@ public class AsyncTaskRefactor {
             PsiParameter publishProgressParam = factory
                 .createParameterFromText("Observer<String> publishProgress", doInBackground.get());
             doInBackground.get().getParameterList().add(publishProgressParam);
-            doInBackground.get().getBody();
+            final List<PsiReferenceExpression> expr = new ArrayList<>();
+            doInBackground.get().accept(new JavaRecursiveElementWalkingVisitor() {
+                @Override
+                public void visitReferenceExpression (PsiReferenceExpression referenceExpression) {
+                    super.visitReferenceExpression(referenceExpression);
+                    if ("publishProgress".equals(referenceExpression.getText())) {
+                        expr.add(referenceExpression);
+                    }
+                }
+            });
+            PsiExpression expression = factory.createExpressionFromText("publishProgress.onNext",doInBackground.get());
+            expr.forEach(ex->ex.replace(expression));
         }
     }
 }
