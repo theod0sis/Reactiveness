@@ -9,7 +9,7 @@ dealing with threads. An [AsyncTask](https://developer.android.com/reference/and
 that runs on a background thread and whose result is published on the UI thread. Due to lot of drawbacks, AsyncTask was deprecated
 in Android  API level R.
 
-##Reactive Extension
+## Reactive Extension
 [Reactive Extension](http://reactivex.io/intro.html) (aka Rx or ReactiveX) is a library for creating asynchronous and event base
 applications. ReactiveX is a combination of observer and iterator design patterns. Merge the advantage of iterators with 
 the flexibility of event based asynchronous programming.    
