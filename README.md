@@ -33,7 +33,7 @@ Observable will run on the Ui thread:
 
 Observable will run on the blue thread due to SubscribeOn(blue): 
 
-![](./img/observeOn.png =100gx20)
+![](./img/observeOn.png=100gx20)
 
 ## How to run local:
 
