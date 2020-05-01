@@ -29,11 +29,11 @@ the Observable will use to send notifications to its observers.
 
 Observable will run on the Ui thread:
 
-![](/img/observeOn1.gif)
+![](./img/observeOn1.gif)
 
 Observable will run on the blue thread due to SubscribeOn(blue): 
 
-![](/img/observeOn.png)
+![](./img/observeOn.png =100gx20)
 
 ## How to run local:
 
