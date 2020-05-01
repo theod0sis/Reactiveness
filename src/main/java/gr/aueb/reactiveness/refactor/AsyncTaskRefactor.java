@@ -14,11 +14,7 @@ import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiIfStatement;
-import com.intellij.psi.PsiImportList;
-import com.intellij.psi.PsiImportStatementBase;
-import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiLocalVariable;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
@@ -44,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -98,31 +93,10 @@ public class AsyncTaskRefactor {
         }
     }
 
-    private void addImport(PsiElementFactory elementFactory, String fullyQualifiedName, PsiClass psiClass) {
-        final PsiFile file = psiClass.getContainingFile();
-        if (!(file instanceof PsiJavaFile)) {
-            return;
-        }
 
-        final PsiJavaFile javaFile = (PsiJavaFile) file;
-
-        final PsiImportList importList = javaFile.getImportList();
-        if (importList == null) {
-            return;
-        }
-        // Check if already imported
-        for (PsiImportStatementBase is : importList.getAllImportStatements()) {
-            String impQualifiedName = Objects.requireNonNull(is.getImportReference()).getQualifiedName();
-            if (fullyQualifiedName.equals(impQualifiedName)) {
-                return; // Already imported so nothing needed
-            }
-        }
-        // Not imported yet so add it
-        importList.add(elementFactory.createImportStatementOnDemand(fullyQualifiedName));
-    }
 
     private void createCompositeDisposable(PsiElementFactory factory, PsiClass psiClass) {
-        addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
+        ReactivenessUtils.addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
         PsiField compositeDisposableField = factory
             .createFieldFromText("private CompositeDisposable compositeDisposable = new CompositeDisposable();",
                 psiClass);
@@ -288,7 +262,7 @@ public class AsyncTaskRefactor {
             if (onPreExecuteExist) {
                 addOnPreExecute(factory, executeCalls, methods.get(0));
             }
-            generateRxCode(factory, methodCallExpression, methods.get(0));
+            generateRxCode(factory, methodCallExpression, methods.get(0),onProgressUpdateExist);
         });
         localVariables.forEach(PsiLocalVariable::delete);
 
@@ -300,17 +274,17 @@ public class AsyncTaskRefactor {
             if (onPreExecuteExist) {
                 addOnPreExecute(factory, directCalls.getReference(), methods.get(0));
             }
-            generateRxCode(factory, directCalls, methods.get(0));
+            generateRxCode(factory, directCalls, methods.get(0),onProgressUpdateExist);
         });
     }
 
     private void generateRxCode(final PsiElementFactory factory, final PsiMethodCallExpression directCalls,
-                                final PsiMethodImpl method) {
+                                final PsiMethodImpl method,final boolean onProgressUpdateExist) {
         PsiExpression[] arguments = directCalls.getArgumentList().getExpressions();
         final String[] s = {""};
         Arrays.stream(arguments).forEach(arg -> s[0] = s[0] + arg.getText() + ',');
 
-        PsiStatement rxStatement = rxStatements(factory, method, s);
+        PsiStatement rxStatement = rxStatements(factory, method, s,onProgressUpdateExist);
 
         PsiElement rxReplaceElement = directCalls.getParent().replace(rxStatement);
         PsiStatement statement = factory
@@ -319,9 +293,9 @@ public class AsyncTaskRefactor {
     }
 
     @NotNull private PsiStatement rxStatements(final PsiElementFactory factory, final PsiMethodImpl method,
-                                               final String[] s) {
+                                               final String[] s,final boolean onProgressUpdateExist) {
         return factory.createStatementFromText(
-            "Disposable d2 = Single.fromCallable(() -> doInBackground(" + (s[0] + " progressSubject") + "))\n"
+            "Disposable d2 = Single.fromCallable(() -> rxDoInBackground(" + (s[0] + (onProgressUpdateExist? "progressSubject":"")) + "))\n"
                 + ".subscribeOn(Schedulers.io())\n" + ".observeOn(AndroidSchedulers.mainThread())\n"
                 + ".subscribe(s -> rxOnPostExecute(s));", method);
     }

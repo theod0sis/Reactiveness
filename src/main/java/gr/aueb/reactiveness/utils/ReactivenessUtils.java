@@ -3,6 +3,11 @@ package gr.aueb.reactiveness.utils;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiElementFactory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiImportList;
+import com.intellij.psi.PsiImportStatementBase;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReferenceList;
 
@@ -45,4 +50,24 @@ public final class ReactivenessUtils {
         return javaFileClass.getExtendsList().getReferencedTypes()[0].getClassName().contains(Commons.ACTIVITY_CLASS);
     }
 
+    public static void addImport(PsiElementFactory elementFactory, String fullyQualifiedName, PsiClass psiClass) {
+        final PsiFile file = psiClass.getContainingFile();
+        if (!(file instanceof PsiJavaFile)) {
+            return;
+        }
+        final PsiJavaFile javaFile = (PsiJavaFile) file;
+        final PsiImportList importList = javaFile.getImportList();
+        if (importList == null) {
+            return;
+        }
+        // Check if already imported
+        for (PsiImportStatementBase is : importList.getAllImportStatements()) {
+            String impQualifiedName = Objects.requireNonNull(is.getImportReference()).getQualifiedName();
+            if (fullyQualifiedName.equals(impQualifiedName)) {
+                return; // Already imported so nothing needed
+            }
+        }
+        // Not imported yet so add it
+        importList.add(elementFactory.createImportStatementOnDemand(fullyQualifiedName));
+    }
 }
