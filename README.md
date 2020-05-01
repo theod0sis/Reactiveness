@@ -33,7 +33,7 @@ Observable will run on the Ui thread:
 
 Observable will run on the blue thread due to SubscribeOn(blue): 
 
-<img src="./img/observeOn.png" width="200" height = px100>
+<img src="./img/observeOn.png" width="400" height = px150>
 
 
 ## How to run local:
