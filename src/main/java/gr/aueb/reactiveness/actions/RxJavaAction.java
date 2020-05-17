@@ -42,7 +42,7 @@ public class RxJavaAction extends AnAction {
         Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance()
             .getContainingFiles(FileTypeIndex.NAME, JavaFileType.INSTANCE, GlobalSearchScope.projectScope(project));
         List<PsiClass> validClasses = new ArrayList<>();
-        Map<PsiClass,PsiClass> parentInnerClass = new HashMap();
+        Map<PsiClass,PsiClass> parentInnerClass = new HashMap<>();
         virtualFiles.forEach(virtualFile -> {
             //check if the file has .java extension
             if (JavaFileType.DEFAULT_EXTENSION.equalsIgnoreCase(virtualFile.getFileType().getName())) {
@@ -66,7 +66,9 @@ public class RxJavaAction extends AnAction {
                 }
             }
         });
-        refactor.refactorInnerAsyncTask(elementFactory,parentInnerClass);
+        if(!parentInnerClass.isEmpty()) {
+            refactor.refactorInnerAsyncTask(elementFactory, parentInnerClass);
+        }
     }
 
     @Override
