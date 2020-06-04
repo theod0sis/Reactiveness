@@ -20,6 +20,7 @@ public class AsyncTaskInstance {
     private final PsiMethod[] allMethods;
     private final PsiField[] allFields;
     private final int textOffset;
+    private final String taskName;
 
     /**
      * Instantiates a new Async task instance.
@@ -27,12 +28,18 @@ public class AsyncTaskInstance {
      * @param asyncTaskClass the async task class
      */
     public AsyncTaskInstance(final PsiClass asyncTaskClass) {
-        this.classInstance= asyncTaskClass;
+        this.classInstance = asyncTaskClass;
         this.onProgressUpdateExist = onProgressUpdateExist(asyncTaskClass);
         this.onPreExecuteExist = onPreExecuteExist(asyncTaskClass);
-        this.allMethods = Optional.ofNullable(asyncTaskClass).isPresent()?asyncTaskClass.getAllMethods(): new PsiMethod[0];
-        this.allFields = Optional.ofNullable(asyncTaskClass).isPresent()?asyncTaskClass.getAllFields(): new PsiField[0];
-        this.textOffset = Optional.ofNullable(asyncTaskClass).isPresent()?asyncTaskClass.getTextOffset(): 0;
+        this.allMethods = Optional.ofNullable(asyncTaskClass).isPresent() ? asyncTaskClass.getMethods()
+            : new PsiMethod[0];
+        this.allFields = Optional.ofNullable(asyncTaskClass).isPresent() ? asyncTaskClass.getFields()
+            : new PsiField[0];
+        this.textOffset = Optional.ofNullable(asyncTaskClass).isPresent() ? asyncTaskClass.getTextOffset() : 0;
+        char[] methodName = Optional.ofNullable(asyncTaskClass).isPresent() ? asyncTaskClass.getName().toCharArray()
+            : "AsyncTask".toCharArray();
+        methodName[0] = Character.toLowerCase(methodName[0]);
+        this.taskName = new String(methodName);
     }
 
     /**
@@ -81,6 +88,15 @@ public class AsyncTaskInstance {
     }
 
     /**
+     * Gets task name.
+     *
+     * @return the task name
+     */
+    public String getTaskName() {
+        return taskName;
+    }
+
+    /**
      * Gets text offset.
      *
      * @return the text offset
@@ -89,16 +105,16 @@ public class AsyncTaskInstance {
         return textOffset;
     }
 
-    private boolean onProgressUpdateExist(final PsiClass asyncTask){
-        if(asyncTask == null ){
+    private boolean onProgressUpdateExist(final PsiClass asyncTask) {
+        if (asyncTask == null) {
             return false;
         }
         return Arrays.stream(asyncTask.getAllMethods())
             .anyMatch(psiMethod -> psiMethod.getName().equals("onProgressUpdate"));
     }
 
-    private boolean onPreExecuteExist(final PsiClass asyncTask){
-        if(asyncTask == null ){
+    private boolean onPreExecuteExist(final PsiClass asyncTask) {
+        if (asyncTask == null) {
             return false;
         }
         return Arrays.stream(asyncTask.getAllMethods())
