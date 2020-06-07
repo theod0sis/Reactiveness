@@ -21,11 +21,11 @@
          the version of the corresponding language/platform/framework.
          Don't mention the IDE compatibility. E.g. don't say "Adds support to IntelliJ IDEA for..."
          Displayed in the "Plugins" settings dialog and the plugin repository Web interface. -->
-<!--    <description></description>-->
+    <!--    <description></description>-->
 
     <!-- Description of changes in the latest version of the plugin.
          Displayed in the "Plugins" settings dialog and the plugin repository Web interface.  -->
-<!--    <change-notes>Initial release of the plugin.</change-notes>-->
+    <!--    <change-notes>Initial release of the plugin.</change-notes>-->
 
     <!-- Plugin version
          Recommended format is BRANCH.BUILD.FIX (MAJOR.MINOR.FIX)
@@ -45,12 +45,12 @@
          See "Compatibility with Multiple Products" and "Plugin Dependencies" for more information.  -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
-<!--    <depends>com.third.party.plugin</depends>-->
+    <!--    <depends>com.third.party.plugin</depends>-->
 
     <!-- Optional dependency on another plugin.
          If the plugin with the "com.MySecondPlugin" ID is installed, the contents of mysecondplugin.xml
          (the format of this file conforms to the format of plugin.xml) will be loaded. -->
-<!--    <depends optional="true" config-file="mysecondplugin.xml">com.MySecondPlugin</depends>-->
+    <!--    <depends optional="true" config-file="mysecondplugin.xml">com.MySecondPlugin</depends>-->
 
     <!-- Minimum and maximum build of IDE compatible with the plugin -->
     <idea-version since-build="183" until-build="183.*"/>
@@ -58,58 +58,57 @@
     <!-- Resource bundle (/messages/MyPluginBundle.properties) to be used
          with `key` attributes in extension points and implicit keys like
          `action.[pluginID].[ActionID].text` -->
-<!--    <resource-bundle>messages.MyPluginBundle</resource-bundle>-->
+    <!--    <resource-bundle>messages.MyPluginBundle</resource-bundle>-->
 
     <!-- Plugin's application components -->
     <application-components>
-<!--        <component>-->
-<!--            &lt;!&ndash; Component's interface class &ndash;&gt;-->
-<!--&lt;!&ndash;            <interface-class>com.foo.Component1Interface</interface-class>&ndash;&gt;-->
+        <!--        <component>-->
+        <!--            &lt;!&ndash; Component's interface class &ndash;&gt;-->
+        <!--&lt;!&ndash;            <interface-class>com.foo.Component1Interface</interface-class>&ndash;&gt;-->
 
-<!--            &lt;!&ndash; Component's implementation class &ndash;&gt;-->
-<!--&lt;!&ndash;            <implementation-class>com.foo.impl.Component1Impl</implementation-class>&ndash;&gt;-->
-<!--        </component>-->
+        <!--            &lt;!&ndash; Component's implementation class &ndash;&gt;-->
+        <!--&lt;!&ndash;            <implementation-class>com.foo.impl.Component1Impl</implementation-class>&ndash;&gt;-->
+        <!--        </component>-->
     </application-components>
 
     <!-- Plugin's project components -->
-<!--    <project-components>-->
-<!--        <component>-->
-<!--            &lt;!&ndash; Interface and implementation classes are the same &ndash;&gt;-->
-<!--            <implementation-class>com.foo.Component2</implementation-class>-->
+    <!--    <project-components>-->
+    <!--        <component>-->
+    <!--            &lt;!&ndash; Interface and implementation classes are the same &ndash;&gt;-->
+    <!--            <implementation-class>com.foo.Component2</implementation-class>-->
 
-<!--            &lt;!&ndash; If the "workspace" option is set "true", the component-->
-<!--                 saves its state to the .iws file instead of the .ipr file.-->
-<!--                 Note that the <option> element is used only if the component-->
-<!--                 implements the JDOMExternalizable interface. Otherwise, the-->
-<!--                 use of the <option> element takes no effect.  &ndash;&gt;-->
-<!--            <option name="workspace" value="true" />-->
+    <!--            &lt;!&ndash; If the "workspace" option is set "true", the component-->
+    <!--                 saves its state to the .iws file instead of the .ipr file.-->
+    <!--                 Note that the <option> element is used only if the component-->
+    <!--                 implements the JDOMExternalizable interface. Otherwise, the-->
+    <!--                 use of the <option> element takes no effect.  &ndash;&gt;-->
+    <!--            <option name="workspace" value="true" />-->
 
-<!--            &lt;!&ndash; If the "loadForDefaultProject" tag is present, the project component is instantiated also for the default project. &ndash;&gt;-->
-<!--            <loadForDefaultProject/>-->
-<!--        </component>-->
-<!--    </project-components>-->
+    <!--            &lt;!&ndash; If the "loadForDefaultProject" tag is present, the project component is instantiated also for the default project. &ndash;&gt;-->
+    <!--            <loadForDefaultProject/>-->
+    <!--        </component>-->
+    <!--    </project-components>-->
 
     <!-- Plugin's module components -->
     <module-components>
-<!--        <component>-->
-<!--&lt;!&ndash;            <implementation-class>com.foo.Component3</implementation-class>&ndash;&gt;-->
-<!--        </component>-->
+        <!--        <component>-->
+        <!--&lt;!&ndash;            <implementation-class>com.foo.Component3</implementation-class>&ndash;&gt;-->
+        <!--        </component>-->
     </module-components>
 
     <!-- Actions -->
-<!--    <actions>-->
-<!--        <group id="MyPlugin.SampleMenu" text="Greeting" description="Greeting menu">-->
-<!--            <add-to-group group-id="MainMenu" anchor="last"/>-->
-<!--            <action id="Myplugin.Textboxes" class="gr.aueb.reactiveness.actions.RxJavaAction" text="Hello" description="Says hello"/>-->
-<!--        </group>-->
-<!--    </actions>-->
 
     <actions>
+        <group id="Reactiveness.RefactorMenu" text="Migrate AsyncTask to Rx" description="Migrate AsyncTask to RxJava">
+            <add-to-group group-id="RefactoringMenu" anchor="first"/>
+            <action id="Reactiveness.shortcut" class="gr.aueb.reactiveness.actions.RxJavaAction"
+                    text="Migrate AsyncTask to Rx" description="Migrate AsyncTask to Rx"/>
+        </group>
         <action
                 id="Reactiveness.shortcut"
                 class="gr.aueb.reactiveness.actions.RxJavaAction"
                 text="Shortcut to activate reactiveness"
-                description="transforms asynctask to rxjava2">
+                description="Migrate AsyncTask to Rx">
             <keyboard-shortcut first-keystroke="shift ctrl alt R" keymap="$default"/>
             <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
         </action>
@@ -120,7 +119,7 @@
          "beanClass" attribute specifies the class the implementations
          of which can be used for the extension point. -->
     <extensionPoints>
-<!--        <extensionPoint name="testExtensionPoint" beanClass="com.foo.impl.MyExtensionBean"/>-->
+        <!--        <extensionPoint name="testExtensionPoint" beanClass="com.foo.impl.MyExtensionBean"/>-->
     </extensionPoints>
 
     <!-- Extensions which the plugin adds to extension points
@@ -132,7 +131,7 @@
          tag matches the name of the extension point, and the
          "implementation" class specifies the name of the class
          added to the extension point. -->
-<!--    <extensions xmlns="VssIntegration">-->
-<!--        <testExtensionPoint />-->
-<!--    </extensions>-->
+    <!--    <extensions xmlns="VssIntegration">-->
+    <!--        <testExtensionPoint />-->
+    <!--    </extensions>-->
 </idea-plugin>
