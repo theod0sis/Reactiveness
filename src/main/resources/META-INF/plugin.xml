@@ -4,12 +4,12 @@
     <!-- Plugin name. It should be short and descriptive but does
          not have to be identical to the name of the JAR file.
          Displayed in the "Plugins" settings dialog and the plugin repository Web interface. -->
-    <name>VssIntegration</name>
+    <name>Reactiveness</name>
 
     <!-- Unique identifier of the plugin. Should be FQN.
          Cannot be changed between the plugin versions.
          If not specified, assumed to be equal to <name>. This can have brittle results. -->
-    <id>com.jetbrains.vssintegration</id>
+    <id>gr.aueb.reactiveness</id>
 
     <!-- Description of the plugin.
          Should be short and to the point.
@@ -21,7 +21,7 @@
          the version of the corresponding language/platform/framework.
          Don't mention the IDE compatibility. E.g. don't say "Adds support to IntelliJ IDEA for..."
          Displayed in the "Plugins" settings dialog and the plugin repository Web interface. -->
-    <!--    <description></description>-->
+    <description>Refactoring Android AsyncTask operations to RxJava.</description>-->
 
     <!-- Description of changes in the latest version of the plugin.
          Displayed in the "Plugins" settings dialog and the plugin repository Web interface.  -->
