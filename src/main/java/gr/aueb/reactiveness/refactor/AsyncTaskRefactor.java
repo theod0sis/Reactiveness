@@ -11,17 +11,21 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
+import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiIfStatement;
+import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiLocalVariable;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.PsiReferenceList;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
@@ -47,7 +51,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * The type Async task refactor.
+ * The AsyncTask refactor class.
  *
  * @author taggelis
  */
@@ -60,7 +64,7 @@ public class AsyncTaskRefactor {
     private final String SCHEDULERS_IMPORT = "io.reactivex.rxjava3.schedulers";
 
     /**
-     * Refactor inner async task.
+     * Refactor inner asyncTask.
      *
      * @param factory    the factory
      * @param innerAsync the inner async
@@ -70,7 +74,7 @@ public class AsyncTaskRefactor {
             new WriteCommandAction.Simple(keySet.getProject(), keySet.getContainingFile()) {
                 @Override
                 protected void run() throws Throwable {
-                    // 0. Create CompositeDisposable to handle subscriptions
+                    // 0. Create CompositeDisposable to handle subscriptions if not exists
                     createCompositeDisposable(factory, keySet);
                     // create AsyncTaskInstance
                     AsyncTaskInstance instance = new AsyncTaskInstance(innerAsync.get(keySet));
@@ -102,17 +106,57 @@ public class AsyncTaskRefactor {
         }
     }
 
+    public void refactorAnonymousAsyncTask(PsiElementFactory factory, List<PsiClass> anonymousAsync) {
+        List<PsiClass> classesAdded = new ArrayList<>();
+        anonymousAsync.forEach(clazz -> new WriteCommandAction.Simple(clazz.getProject(), clazz.getContainingFile()) {
+            @Override
+            protected void run() {
+                //0. Search for the anonymousAsyncTask expression
+                List<PsiNewExpression> anonymousList = ReactivenessUtils.findAnonymousAsyncTaskExpression(clazz);
+                for (PsiNewExpression newAsyncTaskExpression : anonymousList) {
+                    PsiClass innerAsyncClass = factory.createClassFromText(newAsyncTaskExpression.getText(), null);
+                    GenerateMembersUtil
+                        .insertMembersAtOffset(clazz, clazz.getTextOffset(),
+                            Collections.<GenerationInfo>singletonList(
+                                new PsiGenerationInfo<>(innerAsyncClass)));
+                    classesAdded.add(innerAsyncClass);
+                }
+            }
+        }.execute());
+
+        classesAdded.forEach(clazz -> new WriteCommandAction.Simple(clazz.getProject(), clazz.getContainingFile()) {
+            @Override
+            protected void run() {
+                PsiJavaCodeReferenceElement referenceElement;
+                PsiErrorElement errorElement = (PsiErrorElement) clazz.getLBrace().getNextSibling().getNextSibling();
+
+                PsiReferenceList targetReferenceList = clazz.getExtendsList();
+                PsiJavaCodeReferenceElement type = factory
+                    .createReferenceFromText(errorElement.getChildren()[2].getText(), null);
+                assert targetReferenceList != null;
+                targetReferenceList.add(type);
+                errorElement.delete();
+                if (clazz.getLBrace() == clazz.getLBrace().getNextSibling()) {
+                    clazz.getLBrace().delete();
+                }
+            }
+        }.execute());
+
+    }
+
 
     private void createCompositeDisposable(PsiElementFactory factory, PsiClass psiClass) {
-        ReactivenessUtils.addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
-        PsiField compositeDisposableField = factory
-            .createFieldFromText("private CompositeDisposable compositeDisposable = new CompositeDisposable();",
-                psiClass);
-        PsiField[] allFields = psiClass.getFields();
-        GenerateMembersUtil
-            .insertMembersAtOffset(psiClass, allFields[0].getTextOffset(),
-                Collections.<GenerationInfo>singletonList(
-                    new PsiGenerationInfo<>(compositeDisposableField)));
+        if (!ReactivenessUtils.searchIfCompositeDisposableExists(psiClass)) {
+            ReactivenessUtils.addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
+            PsiField compositeDisposableField = factory
+                .createFieldFromText("private CompositeDisposable compositeDisposable = new CompositeDisposable();",
+                    psiClass);
+            PsiField[] allFields = psiClass.getFields();
+            GenerateMembersUtil
+                .insertMembersAtOffset(psiClass, allFields[0].getTextOffset(),
+                    Collections.<GenerationInfo>singletonList(
+                        new PsiGenerationInfo<>(compositeDisposableField)));
+        }
     }
 
     private void moveAsyncTaskFieldsToParentClass(PsiClass psiParentClass, AsyncTaskInstance asyncTaskInstance) {
@@ -239,7 +283,7 @@ public class AsyncTaskRefactor {
                 doInBackground.get().getParameterList().add(publishProgressParam);
             } else {
                 doInBackground.get().getParameterList()
-                    .addBefore(publishProgressParam,doInBackground.get().getParameterList().getParameter(0));
+                    .addBefore(publishProgressParam, doInBackground.get().getParameterList().getParameter(0));
             }
             final List<PsiReferenceExpression> expr = new ArrayList<>();
             doInBackground.get().accept(new JavaRecursiveElementWalkingVisitor() {

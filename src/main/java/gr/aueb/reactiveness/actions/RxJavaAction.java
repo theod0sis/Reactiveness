@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
@@ -32,17 +31,16 @@ public class RxJavaAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Project project = event.getProject();
-        AsyncTaskRefactor refactor = new AsyncTaskRefactor();
         if (project == null || project.isDisposed()) {
             return;
         }
-        PsiElementFactory elementFactory = JavaPsiFacade.getElementFactory(project);
 
         // retrieve all virtualFiles from project
         Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance()
             .getContainingFiles(FileTypeIndex.NAME, JavaFileType.INSTANCE, GlobalSearchScope.projectScope(project));
-        List<PsiClass> validClasses = new ArrayList<>();
-        Map<PsiClass,PsiClass> parentInnerClass = new HashMap<>();
+        //List<PsiClass> standaloneClasses = new ArrayList<>();
+        List<PsiClass> anonymousClasses = new ArrayList<>();
+        Map<PsiClass, PsiClass> parentInnerClass = new HashMap<>();
         virtualFiles.forEach(virtualFile -> {
             //check if the file has .java extension
             if (JavaFileType.DEFAULT_EXTENSION.equalsIgnoreCase(virtualFile.getFileType().getName())) {
@@ -52,23 +50,27 @@ public class RxJavaAction extends AnAction {
                     return;
                 }
                 PsiClass javaFileClass = Objects.requireNonNull(psiJavaFile).getClasses()[0];
-                if (ReactivenessUtils.findIfExtendsAsyncTask(javaFileClass) && ReactivenessUtils
-                    .findIfDoInBackgroundExist(javaFileClass)) {
-                    validClasses.add(javaFileClass);
+                //Todo: Standalone AsyncTask refactor functionality is not supported yet
+                //if (ReactivenessUtils.findIfExtendsAsyncTask(javaFileClass) && ReactivenessUtils
+                //    .findIfDoInBackgroundExist(javaFileClass)) {
+                //    standaloneClasses.add(javaFileClass);
+                //
+                //}
 
+                //search for anonymous AsyncTask
+                if (ReactivenessUtils.findAnonymousAsyncTaskExist(javaFileClass)) {
+                    anonymousClasses.add(javaFileClass);
                 }
-                //search also for inner classes
+                //search for inner classes
                 for (PsiClass javaInnerClass : javaFileClass.getInnerClasses()) {
                     if (ReactivenessUtils.findIfExtendsAsyncTask(javaInnerClass) && ReactivenessUtils
                         .findIfDoInBackgroundExist(javaInnerClass)) {
-                        parentInnerClass.put(javaFileClass,javaInnerClass);
+                        parentInnerClass.put(javaFileClass, javaInnerClass);
                     }
                 }
             }
         });
-        if(!parentInnerClass.isEmpty()) {
-            refactor.refactorInnerAsyncTask(elementFactory, parentInnerClass);
-        }
+        doRefactor(anonymousClasses,parentInnerClass,project);
     }
 
     @Override
@@ -76,4 +78,21 @@ public class RxJavaAction extends AnAction {
 
     }
 
+    /**
+     * Call to refactor.
+     *
+     * @param anonymousClasses the anonymous classes
+     * @param parentInnerClass the parent inner class
+     * @param project          the project
+     */
+    public void doRefactor(final List<PsiClass> anonymousClasses,final Map<PsiClass, PsiClass> parentInnerClass,
+                           final Project project) {
+        AsyncTaskRefactor refactor = new AsyncTaskRefactor();
+        if (!anonymousClasses.isEmpty()) {
+            refactor.refactorAnonymousAsyncTask(JavaPsiFacade.getElementFactory(project), anonymousClasses);
+        }
+        if (!parentInnerClass.isEmpty()) {
+            refactor.refactorInnerAsyncTask(JavaPsiFacade.getElementFactory(project), parentInnerClass);
+        }
+    }
 }

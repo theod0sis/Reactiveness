@@ -27,6 +27,6 @@ intellij {
 
 publishPlugin {
     username 'theod0sis'
-    password '2271042453'
+    password '123'
     channels 'beta'
 }
