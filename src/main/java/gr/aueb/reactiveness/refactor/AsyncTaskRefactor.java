@@ -356,7 +356,7 @@ public class AsyncTaskRefactor {
                 .collectParents(directCalls, PsiMethodImpl.class, false,
                     e -> e instanceof PsiClass);
             if (onPreExecuteExist) {
-                addOnPreExecute(factory, directCalls.getReference(), methods.get(0), innerAsync.getTaskName());
+                addOnPreExecute(factory, directCalls.getChildren()[0].getReference(), methods.get(0), innerAsync.getTaskName());
             }
             generateRxCode(factory, directCalls, methods.get(0), onProgressUpdateExist, innerAsync.getTaskName());
         });
