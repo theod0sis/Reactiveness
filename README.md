@@ -37,9 +37,9 @@ Observable will run on the blue thread due to SubscribeOn(blue):
 
 ## Plugin Flowchart:
 
-<img src="./img/ReactiveNessFlow.png" width="400" height = px150 alt="Flowchart">
+<img src="./img/ReactiveNessFlow.png" width="600" height = px200 alt="Flowchart">
 
-<img src="./img/ZoomInRefactor.png" width="400" height = px150 alt="Zoom Flowchart">
+<img src="./img/ZoomInRefactor.png" width="600" height = px200 alt="Zoom Flowchart">
 
 
 
