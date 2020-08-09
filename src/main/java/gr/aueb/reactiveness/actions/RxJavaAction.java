@@ -16,10 +16,8 @@ import gr.aueb.reactiveness.refactor.AsyncTaskRefactor;
 import gr.aueb.reactiveness.utils.ReactivenessUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,11 +33,11 @@ public class RxJavaAction extends AnAction {
             return;
         }
 
+        AsyncTaskRefactor refactor = new AsyncTaskRefactor();
         // retrieve all virtualFiles from project
         Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance()
             .getContainingFiles(FileTypeIndex.NAME, JavaFileType.INSTANCE, GlobalSearchScope.projectScope(project));
         //List<PsiClass> standaloneClasses = new ArrayList<>();
-        List<PsiClass> anonymousClasses = new ArrayList<>();
         Map<PsiClass, PsiClass> parentInnerClass = new HashMap<>();
         virtualFiles.forEach(virtualFile -> {
             //check if the file has .java extension
@@ -59,7 +57,7 @@ public class RxJavaAction extends AnAction {
 
                 //search for anonymous AsyncTask
                 if (ReactivenessUtils.findAnonymousAsyncTaskExist(javaFileClass)) {
-                    anonymousClasses.add(javaFileClass);
+                    refactor.refactorAnonymousAsyncTaskToInner(JavaPsiFacade.getElementFactory(project), javaFileClass);
                 }
                 //search for inner classes
                 for (PsiClass javaInnerClass : javaFileClass.getInnerClasses()) {
@@ -70,7 +68,7 @@ public class RxJavaAction extends AnAction {
                 }
             }
         });
-        doRefactor(anonymousClasses,parentInnerClass,project);
+        doRefactor(parentInnerClass, project);
     }
 
     @Override
@@ -79,18 +77,13 @@ public class RxJavaAction extends AnAction {
     }
 
     /**
-     * Call to refactor.
+     * Call to refactor inner AsyncTask.
      *
-     * @param anonymousClasses the anonymous classes
      * @param parentInnerClass the parent inner class
      * @param project          the project
      */
-    public void doRefactor(final List<PsiClass> anonymousClasses,final Map<PsiClass, PsiClass> parentInnerClass,
-                           final Project project) {
+    public void doRefactor(final Map<PsiClass, PsiClass> parentInnerClass, final Project project) {
         AsyncTaskRefactor refactor = new AsyncTaskRefactor();
-        if (!anonymousClasses.isEmpty()) {
-            refactor.refactorAnonymousAsyncTask(JavaPsiFacade.getElementFactory(project), anonymousClasses);
-        }
         if (!parentInnerClass.isEmpty()) {
             refactor.refactorInnerAsyncTask(JavaPsiFacade.getElementFactory(project), parentInnerClass);
         }

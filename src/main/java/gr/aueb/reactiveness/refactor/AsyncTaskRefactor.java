@@ -106,42 +106,48 @@ public class AsyncTaskRefactor {
         }
     }
 
-    public void refactorAnonymousAsyncTask(PsiElementFactory factory, List<PsiClass> anonymousAsync) {
-        List<PsiClass> classesAdded = new ArrayList<>();
-        anonymousAsync.forEach(clazz -> new WriteCommandAction.Simple(clazz.getProject(), clazz.getContainingFile()) {
+    public void refactorAnonymousAsyncTaskToInner(PsiElementFactory factory, PsiClass clazz) {
+        new WriteCommandAction.Simple(clazz.getProject(), clazz.getContainingFile()) {
             @Override
             protected void run() {
-                //0. Search for the anonymousAsyncTask expression
+                //0. Search for the anonymousAsyncTask expression.
                 List<PsiNewExpression> anonymousList = ReactivenessUtils.findAnonymousAsyncTaskExpression(clazz);
+                int i = 1;
                 for (PsiNewExpression newAsyncTaskExpression : anonymousList) {
+                    String className = "Async" + i;
                     PsiClass innerAsyncClass = factory.createClassFromText(newAsyncTaskExpression.getText(), null);
+                    innerAsyncClass.setName(className);
+                    PsiErrorElement errorElement = (PsiErrorElement) innerAsyncClass.getLBrace().getNextSibling().getNextSibling();
+
+                    PsiReferenceList targetReferenceList = innerAsyncClass.getExtendsList();
+                    PsiJavaCodeReferenceElement type = factory
+                        .createReferenceFromText(errorElement.getChildren()[2].getText(), null);
+                    assert targetReferenceList != null;
+                    targetReferenceList.add(type);
+                    errorElement.delete();
+                    //delete the addition left and right brace
+                    innerAsyncClass.getLBrace().delete();
+                    innerAsyncClass.getRBrace().delete();
+
                     GenerateMembersUtil
                         .insertMembersAtOffset(clazz, clazz.getTextOffset(),
                             Collections.<GenerationInfo>singletonList(
                                 new PsiGenerationInfo<>(innerAsyncClass)));
-                    classesAdded.add(innerAsyncClass);
+
+                    if(newAsyncTaskExpression.getParent() instanceof PsiLocalVariable ){
+                        PsiExpression newExpression = factory
+                            .createExpressionFromText("new " + className + "()", null);
+                        ((PsiLocalVariable) newAsyncTaskExpression.getParent()).setInitializer(newExpression);
+                    } else if (newAsyncTaskExpression.getParent() instanceof PsiReferenceExpression){
+                        PsiExpression newExpression = factory
+                            .createExpressionFromText("new " + className + "()", null);
+                        newAsyncTaskExpression.replace(newExpression);
+                    }
+                    i+=1;
                 }
+                new ReformatCodeProcessor(clazz.getContainingFile(), false).run();
             }
-        }.execute());
-
-        classesAdded.forEach(clazz -> new WriteCommandAction.Simple(clazz.getProject(), clazz.getContainingFile()) {
-            @Override
-            protected void run() {
-                PsiJavaCodeReferenceElement referenceElement;
-                PsiErrorElement errorElement = (PsiErrorElement) clazz.getLBrace().getNextSibling().getNextSibling();
-
-                PsiReferenceList targetReferenceList = clazz.getExtendsList();
-                PsiJavaCodeReferenceElement type = factory
-                    .createReferenceFromText(errorElement.getChildren()[2].getText(), null);
-                assert targetReferenceList != null;
-                targetReferenceList.add(type);
-                errorElement.delete();
-                if (clazz.getLBrace() == clazz.getLBrace().getNextSibling()) {
-                    clazz.getLBrace().delete();
-                }
-            }
-        }.execute());
-
+        }.execute();
     }
 
 
