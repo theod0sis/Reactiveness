@@ -44,4 +44,4 @@ Observable will run on the blue thread due to SubscribeOn(blue):
 ```
 
 ## Useful info
-The plugin refactors only inner AsyncTask classes on the current state.
+The plugin refactors only inner & anonymous AsyncTask classes on the current state. Standalone AsyncTask classes will be added to next version.
