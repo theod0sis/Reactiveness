@@ -36,6 +36,7 @@ import com.intellij.psi.impl.source.tree.java.PsiKeywordImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import gr.aueb.reactiveness.analysis.AnalyseAsyncTask;
 import gr.aueb.reactiveness.utils.AsyncTaskInstance;
 import gr.aueb.reactiveness.utils.Commons;
 import gr.aueb.reactiveness.utils.ReactivenessUtils;
@@ -74,6 +75,10 @@ public class AsyncTaskRefactor {
             new WriteCommandAction.Simple(keySet.getProject(), keySet.getContainingFile()) {
                 @Override
                 protected void run() throws Throwable {
+                    //-1. validations
+                    if(AnalyseAsyncTask.isInvalidToRefactor(innerAsync.get(keySet))){
+                        return;
+                    }
                     // 0. Create CompositeDisposable to handle subscriptions if not exists
                     createCompositeDisposable(factory, keySet);
                     // create AsyncTaskInstance

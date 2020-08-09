@@ -1,7 +1,13 @@
 package gr.aueb.reactiveness.analysis;
 
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiLocalVariable;
+import com.intellij.psi.PsiNewExpression;
+import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.search.searches.ReferencesSearch;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Analyse asyncTask implementation for validity.
@@ -17,11 +23,17 @@ public final class AnalyseAsyncTask {
      *
      * @return the boolean
      */
-    public static boolean analyseIfValidToRefactor(final PsiClass asyncTaskClass){
+    public static boolean isInvalidToRefactor(final PsiClass asyncTaskClass) {
+        AtomicBoolean isInvalid = new AtomicBoolean(true);
         //search if forbidden method is called
         ReferencesSearch.search(asyncTaskClass).forEach(reference -> {
-            reference.getCanonicalText();
+            PsiElement ref = reference.getElement();
+            if ((ref.getParent() instanceof PsiNewExpression && !(ref.getParent()
+                .getParent() instanceof PsiLocalVariable)) || ref.getParent() instanceof PsiReferenceExpression) {
+                isInvalid.set(ref.getParent().getParent().getText().endsWith("isCancelled") ||
+                    ref.getParent().getParent().getText().endsWith("getStatus"));
+            }
         });
-        return false;
+        return isInvalid.get();
     }
 }
