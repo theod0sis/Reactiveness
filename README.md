@@ -35,6 +35,13 @@ Observable will run on the blue thread due to SubscribeOn(blue):
 
 <img src="./img/observeOn.png" width="400" height = px150>
 
+## Plugin Flowchart:
+
+<img src="./img/ReactiveNessFlow.png" width="400" height = px150 alt="Flowchart">
+
+<img src="./img/ZoomInRefactor.png" width="400" height = px150 alt="Zoom Flowchart">
+
+
 
 ## How to run local:
 
