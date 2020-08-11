@@ -24,7 +24,7 @@ public final class AnalyseAsyncTask {
      * @return the boolean
      */
     public static boolean isInvalidToRefactor(final PsiClass asyncTaskClass) {
-        AtomicBoolean isInvalid = new AtomicBoolean(true);
+        AtomicBoolean isInvalid = new AtomicBoolean(false);
         //search if forbidden method is called
         ReferencesSearch.search(asyncTaskClass).forEach(reference -> {
             PsiElement ref = reference.getElement();
