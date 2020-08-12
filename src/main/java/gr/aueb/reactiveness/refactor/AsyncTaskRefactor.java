@@ -76,7 +76,9 @@ public class AsyncTaskRefactor {
                 @Override
                 protected void run() throws Throwable {
                     //-1. validations
-                    if(AnalyseAsyncTask.isInvalidToRefactor(innerAsync.get(keySet))){
+                    if(AnalyseAsyncTask.isInvalidToRefactor(innerAsync.get(keySet))
+                        ||  ( innerAsync.get(keySet).getModifierList() != null
+                                &&  innerAsync.get(keySet).getModifierList().hasModifierProperty(PsiModifier.STATIC))){
                         return;
                     }
                     // 0. Create CompositeDisposable to handle subscriptions if not exists
@@ -104,7 +106,7 @@ public class AsyncTaskRefactor {
                     // 7. finally delete the asyncTask inner class
                     instance.getClassInstance().delete();
                     // 8. Reformat Code
-                    new ReformatCodeProcessor(keySet.getContainingFile(), false).run();
+                    new ReformatCodeProcessor(keySet.getContainingFile(), true).run();
                     JavaCodeStyleManager.getInstance(keySet.getProject()).optimizeImports(keySet.getContainingFile());
                 }
             }.execute();
@@ -160,7 +162,7 @@ public class AsyncTaskRefactor {
         if (!ReactivenessUtils.searchIfCompositeDisposableExists(psiClass)) {
             ReactivenessUtils.addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
             PsiField compositeDisposableField = factory
-                .createFieldFromText("private CompositeDisposable compositeDisposable = new CompositeDisposable();",
+                .createFieldFromText("private static final CompositeDisposable compositeDisposable = new CompositeDisposable();",
                     psiClass);
             PsiField[] allFields = psiClass.getFields();
             GenerateMembersUtil
@@ -172,6 +174,7 @@ public class AsyncTaskRefactor {
 
     private void moveAsyncTaskFieldsToParentClass(PsiClass psiParentClass, AsyncTaskInstance asyncTaskInstance) {
         for (PsiField psiField : asyncTaskInstance.getAllFields()) {
+            PsiUtil.setModifierProperty(psiField, PsiModifier.PRIVATE, true);
             GenerateMembersUtil
                 .insertMembersAtOffset(psiParentClass, asyncTaskInstance.getTextOffset() - 1,
                     Collections.<GenerationInfo>singletonList(
@@ -195,8 +198,7 @@ public class AsyncTaskRefactor {
                 psiMethod.setName(asyncTaskClass.getTaskName() + psiMethod.getName().substring(2));
             } else {
                 char[] methodName = psiMethod.getName().toCharArray();
-                methodName[0] = Character.toUpperCase(methodName[0]);
-                psiMethod.setName("rx" + new String(methodName));
+                psiMethod.setName(new String(methodName));
             }
             GenerateMembersUtil
                 .insertMembersAtOffset(psiParentClass, psiParentClass.getTextOffset(),
@@ -232,9 +234,9 @@ public class AsyncTaskRefactor {
     private void addNecessaryImports(final PsiClass psiParentClass, final PsiElementFactory factory,
                                      final boolean onProgressUpdateExist) {
         if (onProgressUpdateExist) {
-            ReactivenessUtils.addImport(factory, ANDROID_SCHEDULERS_IMPORT, psiParentClass);
             ReactivenessUtils.addImport(factory, BEHAVIOR_SUBJECT_IMPORT, psiParentClass);
         }
+        ReactivenessUtils.addImport(factory, ANDROID_SCHEDULERS_IMPORT, psiParentClass);
         ReactivenessUtils.addImport(factory, SINGLE_IMPORT, psiParentClass);
         ReactivenessUtils.addImport(factory, SCHEDULERS_IMPORT, psiParentClass);
     }
@@ -371,7 +373,7 @@ public class AsyncTaskRefactor {
                                 final PsiMethodImpl method, final boolean onProgressUpdateExist,
                                 final String taskName) {
         PsiExpression[] arguments = directCalls.getArgumentList().getExpressions();
-        final String[] s = {""};
+        final String[] s = {" "};
         Arrays.stream(arguments).forEach(arg -> s[0] = s[0] + arg.getText() + ",");
         //remove last coma
         s[0] = s[0].substring(0, s[0].length() - 1);

@@ -2,12 +2,12 @@ package gr.aueb.reactiveness.analysis;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiLocalVariable;
 import com.intellij.psi.PsiNewExpression;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.search.searches.ReferencesSearch;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Analyse asyncTask implementation for validity.
@@ -24,16 +24,24 @@ public final class AnalyseAsyncTask {
      * @return the boolean
      */
     public static boolean isInvalidToRefactor(final PsiClass asyncTaskClass) {
-        AtomicBoolean isInvalid = new AtomicBoolean(false);
+        boolean isInvalid = false;
         //search if forbidden method is called
-        ReferencesSearch.search(asyncTaskClass).forEach(reference -> {
+        for (PsiReference reference : ReferencesSearch.search(asyncTaskClass)) {
             PsiElement ref = reference.getElement();
+            if (ref.getContainingFile() != asyncTaskClass.getContainingFile()
+                                || ref.getParent().getParent() instanceof PsiField) {
+                isInvalid = true;
+                break;
+            }
             if ((ref.getParent() instanceof PsiNewExpression && !(ref.getParent()
                 .getParent() instanceof PsiLocalVariable)) || ref.getParent() instanceof PsiReferenceExpression) {
-                isInvalid.set(ref.getParent().getParent().getText().endsWith("isCancelled") ||
-                    ref.getParent().getParent().getText().endsWith("getStatus"));
+                isInvalid = ref.getParent().getParent().getText().endsWith("isCancelled") ||
+                    ref.getParent().getParent().getText().endsWith("getStatus");
+                if(isInvalid) {
+                    break;
+                }
             }
-        });
-        return isInvalid.get();
+        }
+        return isInvalid;
     }
 }

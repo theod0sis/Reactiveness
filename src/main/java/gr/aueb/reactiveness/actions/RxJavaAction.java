@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiInvalidElementAccessException;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
@@ -60,11 +61,15 @@ public class RxJavaAction extends AnAction {
                     refactor.refactorAnonymousAsyncTaskToInner(JavaPsiFacade.getElementFactory(project), javaFileClass);
                 }
                 //search for inner classes
-                for (PsiClass javaInnerClass : javaFileClass.getInnerClasses()) {
-                    if (ReactivenessUtils.findIfExtendsAsyncTask(javaInnerClass) && ReactivenessUtils
-                        .findIfDoInBackgroundExist(javaInnerClass)) {
-                        parentInnerClass.put(javaFileClass, javaInnerClass);
+                try {
+                    for (PsiClass javaInnerClass : javaFileClass.getInnerClasses()) {
+                        if (ReactivenessUtils.findIfExtendsAsyncTask(javaInnerClass) && ReactivenessUtils
+                            .findIfDoInBackgroundExist(javaInnerClass)) {
+                            parentInnerClass.put(javaFileClass, javaInnerClass);
+                        }
                     }
+                } catch (PsiInvalidElementAccessException e) {
+                    return;
                 }
             }
         });

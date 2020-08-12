@@ -109,7 +109,7 @@ public class AsyncTaskInstance {
         if (asyncTask == null) {
             return false;
         }
-        return Arrays.stream(asyncTask.getAllMethods())
+        return Arrays.stream(asyncTask.getMethods())
             .anyMatch(psiMethod -> psiMethod.getName().equals("onProgressUpdate"));
     }
 
@@ -117,7 +117,7 @@ public class AsyncTaskInstance {
         if (asyncTask == null) {
             return false;
         }
-        return Arrays.stream(asyncTask.getAllMethods())
+        return Arrays.stream(asyncTask.getMethods())
             .anyMatch(psiMethod -> psiMethod.getName().equals("onProgressUpdate"));
     }
 }
