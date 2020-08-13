@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -76,9 +77,9 @@ public class AsyncTaskRefactor {
                 @Override
                 protected void run() throws Throwable {
                     //-1. validations
-                    if(AnalyseAsyncTask.isInvalidToRefactor(innerAsync.get(keySet))
-                        ||  ( innerAsync.get(keySet).getModifierList() != null
-                                &&  innerAsync.get(keySet).getModifierList().hasModifierProperty(PsiModifier.STATIC))){
+                    if (AnalyseAsyncTask.isInvalidToRefactor(innerAsync.get(keySet))
+                        || (innerAsync.get(keySet).getModifierList() != null
+                        && innerAsync.get(keySet).getModifierList().hasModifierProperty(PsiModifier.STATIC))) {
                         return;
                     }
                     // 0. Create CompositeDisposable to handle subscriptions if not exists
@@ -124,7 +125,8 @@ public class AsyncTaskRefactor {
                     String className = "Async" + i;
                     PsiClass innerAsyncClass = factory.createClassFromText(newAsyncTaskExpression.getText(), null);
                     innerAsyncClass.setName(className);
-                    PsiErrorElement errorElement = (PsiErrorElement) innerAsyncClass.getLBrace().getNextSibling().getNextSibling();
+                    PsiErrorElement errorElement = (PsiErrorElement) innerAsyncClass.getLBrace().getNextSibling()
+                        .getNextSibling();
 
                     PsiReferenceList targetReferenceList = innerAsyncClass.getExtendsList();
                     PsiJavaCodeReferenceElement type = factory
@@ -141,16 +143,16 @@ public class AsyncTaskRefactor {
                             Collections.<GenerationInfo>singletonList(
                                 new PsiGenerationInfo<>(innerAsyncClass)));
 
-                    if(newAsyncTaskExpression.getParent() instanceof PsiLocalVariable ){
+                    if (newAsyncTaskExpression.getParent() instanceof PsiLocalVariable) {
                         PsiExpression newExpression = factory
                             .createExpressionFromText("new " + className + "()", null);
                         ((PsiLocalVariable) newAsyncTaskExpression.getParent()).setInitializer(newExpression);
-                    } else if (newAsyncTaskExpression.getParent() instanceof PsiReferenceExpression){
+                    } else if (newAsyncTaskExpression.getParent() instanceof PsiReferenceExpression) {
                         PsiExpression newExpression = factory
                             .createExpressionFromText("new " + className + "()", null);
                         newAsyncTaskExpression.replace(newExpression);
                     }
-                    i+=1;
+                    i += 1;
                 }
                 new ReformatCodeProcessor(clazz.getContainingFile(), false).run();
             }
@@ -162,7 +164,8 @@ public class AsyncTaskRefactor {
         if (!ReactivenessUtils.searchIfCompositeDisposableExists(psiClass)) {
             ReactivenessUtils.addImport(factory, COMPOSITE_DISPOSABLE_IMPORT, psiClass);
             PsiField compositeDisposableField = factory
-                .createFieldFromText("private static final CompositeDisposable compositeDisposable = new CompositeDisposable();",
+                .createFieldFromText(
+                    "private static final CompositeDisposable compositeDisposable = new CompositeDisposable();",
                     psiClass);
             PsiField[] allFields = psiClass.getFields();
             GenerateMembersUtil
@@ -342,7 +345,7 @@ public class AsyncTaskRefactor {
                 }
             });
         });
-
+        AtomicInteger num = new AtomicInteger(1);
         executeReference.forEach(executeCalls -> {
             PsiMethodCallExpression methodCallExpression = (PsiMethodCallExpression) PsiTreeUtil
                 .findFirstParent(executeCalls.getElement(), false, e -> e instanceof PsiMethodCallExpression);
@@ -353,7 +356,8 @@ public class AsyncTaskRefactor {
                 addOnPreExecute(factory, executeCalls, methods.get(0), innerAsync.getTaskName());
             }
             generateRxCode(factory, methodCallExpression, methods.get(0), onProgressUpdateExist,
-                innerAsync.getTaskName());
+                innerAsync.getTaskName(), num.addAndGet(1));
+
         });
         localVariables.forEach(PsiLocalVariable::delete);
 
@@ -363,37 +367,44 @@ public class AsyncTaskRefactor {
                 .collectParents(directCalls, PsiMethodImpl.class, false,
                     e -> e instanceof PsiClass);
             if (onPreExecuteExist) {
-                addOnPreExecute(factory, directCalls.getChildren()[0].getReference(), methods.get(0), innerAsync.getTaskName());
+                addOnPreExecute(factory, directCalls.getChildren()[0].getReference(), methods.get(0),
+                    innerAsync.getTaskName());
             }
-            generateRxCode(factory, directCalls, methods.get(0), onProgressUpdateExist, innerAsync.getTaskName());
+            generateRxCode(factory, directCalls, methods.get(0), onProgressUpdateExist, innerAsync.getTaskName(),
+                num.addAndGet(1));
         });
     }
 
     private void generateRxCode(final PsiElementFactory factory, final PsiMethodCallExpression directCalls,
                                 final PsiMethodImpl method, final boolean onProgressUpdateExist,
-                                final String taskName) {
+                                final String taskName, final int numberOfGeneration) {
         PsiExpression[] arguments = directCalls.getArgumentList().getExpressions();
-        final String[] s = {" "};
-        Arrays.stream(arguments).forEach(arg -> s[0] = s[0] + arg.getText() + ",");
+        String disposalName = "d" + numberOfGeneration;
+        StringBuilder s = new StringBuilder(" ");
+        int k = directCalls.getText().contains("executeOnExecutor") ? 1 : 0;
+        for (int i = k; i < arguments.length; i++) {
+            s.append(arguments[i].getText()).append(",");
+        }
         //remove last coma
-        s[0] = s[0].substring(0, s[0].length() - 1);
-        PsiStatement rxStatement = rxStatements(factory, method, s, onProgressUpdateExist, taskName);
+        s = new StringBuilder(s.substring(0, s.length() - 1));
+        PsiStatement rxStatement = rxStatements(factory, method, s.toString(), onProgressUpdateExist, taskName, disposalName);
 
         PsiElement rxReplaceElement = directCalls.getParent().replace(rxStatement);
         PsiStatement statement = factory
-            .createStatementFromText("compositeDisposable.add(d2);", method);
+            .createStatementFromText("compositeDisposable.add(" + disposalName + ");", method);
         method.addAfter(statement, rxReplaceElement);
     }
 
     @NotNull private PsiStatement rxStatements(final PsiElementFactory factory, final PsiMethodImpl method,
-                                               final String[] s, final boolean onProgressUpdateExist,
-                                               final String taskName) {
+                                               final String s, final boolean onProgressUpdateExist,
+                                               final String taskName, final String disposalName) {
         // taskName is camelcase and starts with lower letter
         char[] name = taskName.toCharArray();
         name[0] = Character.toUpperCase(name[0]);
         return factory.createStatementFromText(
-            "Disposable d2 = Single.fromCallable(() -> do" + new String(name) + "(" + (onProgressUpdateExist
-                ? Commons.PROGRESS_SUBJECT + "," : "") + s[0] + "))\n"
+            "Disposable " + disposalName + " = Single.fromCallable(() -> do" + new String(name) + "(" + (
+                onProgressUpdateExist
+                    ? Commons.PROGRESS_SUBJECT + "," : "") + s + "))\n"
                 + ".subscribeOn(Schedulers.io())\n" + ".observeOn(AndroidSchedulers.mainThread())\n"
                 + ".subscribe(s -> " + taskName + "PostExecute(s));", method);
     }
