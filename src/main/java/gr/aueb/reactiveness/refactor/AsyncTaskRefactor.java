@@ -168,8 +168,14 @@ public class AsyncTaskRefactor {
                     "private static final CompositeDisposable compositeDisposable = new CompositeDisposable();",
                     psiClass);
             PsiField[] allFields = psiClass.getFields();
+            int position;
+            if(allFields.length > 0){
+                position = allFields[0].getTextOffset();
+            } else {
+                position =  psiClass.getLBrace().getTextOffset();
+            }
             GenerateMembersUtil
-                .insertMembersAtOffset(psiClass, allFields[0].getTextOffset(),
+                .insertMembersAtOffset(psiClass, position,
                     Collections.<GenerationInfo>singletonList(
                         new PsiGenerationInfo<>(compositeDisposableField)));
         }
